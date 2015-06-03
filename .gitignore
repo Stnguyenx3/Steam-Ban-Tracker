@@ -47,3 +47,6 @@ RandomData.txt
 Server Data.txt
 lib/gson-2.3.1-sources.jar
 Raw Server Data.txt
+summaries.tmp
+users.tmp
+*.class
