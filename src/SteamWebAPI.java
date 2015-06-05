@@ -17,16 +17,13 @@ public class SteamWebAPI {
 	// TODO GetSchemaForGame returns gamename, gameversion and
 	// availablegamestats(achievements and stats).
 
-	// Steam API key
-	private final static String APIKEY = "DF0D7C47A867F2A50A9C9A201AFCABF9";
-
 	// URL components
 	private static String baseURL = "http://api.steampowered.com/";
 	private static String interfaceName = "ISteamUser";
 
-	private static String userID = "";
-	private static String URLToRequest = baseURL + interfaceName + "/" + "GetPlayerBans/v1/?key=" + APIKEY
-			+ "&steamids=";
+	private static StringBuilder userIDs = new StringBuilder();
+	private static String URLToRequest = baseURL + interfaceName + "/" + "GetPlayerBans/v1/?key="
+			+ FileHandler.getAPIKey() + "&steamids=";
 
 	// String that contains JSON file.
 	private static String line;
@@ -42,19 +39,28 @@ public class SteamWebAPI {
 	 * Get the profile information(if profile is set to public) of a player
 	 * returned as JSON format.
 	 * 
-	 * @param id
-	 *            Community ID of the user.
-	 * @return Profile information for the user.
+	 * @param ids
+	 *            Array of Steam Community IDs.
+	 * @return Profile information for the Array of users in JSON.
 	 */
-	public static String getInfo(String id) {
+	public static String getInfo(String[] ids) {
 
-		userID = id;
+		for (int i = 0; i < ids.length; i++) {
+			if (ids[i] != null) {
+				userIDs.append(ids[i] + ",");
+			} else {
+				break;
+			}
+		}
+
+		// Remove extra comma at end of String.
+		String uIDsString = userIDs.substring(0, userIDs.length() - 1);
 
 		try {
 
-			URL url = new URL(URLToRequest + userID);
+			URL url = new URL(URLToRequest + uIDsString);
 
-			System.out.println(url);
+			// System.out.println(url);
 
 			URLConnection conn = url.openConnection();
 			InputStream is = conn.getInputStream();
@@ -68,7 +74,6 @@ public class SteamWebAPI {
 				result.append(line + "\n");
 			}
 
-			// System.out.println(result.toString());
 		} catch (MalformedURLException ex) {
 
 			System.out.println("EXCEPTION:Malformed URL!");
@@ -78,7 +83,7 @@ public class SteamWebAPI {
 		}
 
 		// Clear userIDs to be used again.
-		// userID = "";
+		userIDs.delete(0, userIDs.length());
 
 		return result.toString();
 
@@ -122,8 +127,8 @@ public class SteamWebAPI {
 	public static String getPlayerSummaries(String communityID) {
 
 		try {
-			URL url = new URL(baseURL + interfaceName + "/GetPlayerSummaries/v0002/?key=" + APIKEY + "&steamids="
-					+ communityID);
+			URL url = new URL(baseURL + interfaceName + "/GetPlayerSummaries/v0002/?key=" + FileHandler.getAPIKey()
+					+ "&steamids=" + communityID);
 			// System.out.println(url);
 			URLConnection conn = url.openConnection();
 			InputStream is = conn.getInputStream();

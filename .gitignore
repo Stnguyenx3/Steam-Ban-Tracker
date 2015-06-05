@@ -51,3 +51,4 @@ summaries.tmp
 users.tmp
 *.class
 apikey.txt
+*.html

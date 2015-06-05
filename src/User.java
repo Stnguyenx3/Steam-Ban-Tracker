@@ -107,6 +107,21 @@ public class User implements Serializable {
 	}
 
 	@Override
+	public boolean equals(Object o) {
+
+		User u = (User) o;
+
+		if (!(o instanceof User)) {
+			return false;
+		} else if (u.SteamId.equalsIgnoreCase(this.SteamId)) {
+			return true;
+		} else {
+			return false;
+		}
+
+	};
+
+	@Override
 	public String toString() {
 
 		return ("\r\n\r\n{SteamId:" + SteamId + ",\r\n" + "  Vac Banned:" + VACBanned + ",\r\n"

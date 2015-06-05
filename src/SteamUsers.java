@@ -25,12 +25,26 @@ public class SteamUsers {
 		return players.get(index);
 	}
 
+	/**
+	 * Determine whether or not the 'players' ArrayList is empty.
+	 * 
+	 * @return Boolean value true if empty, false otherwise.
+	 */
 	public boolean isEmpty() {
 		if (players.size() == 0) {
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * Get the size of the 'players' ArrayList.
+	 * 
+	 * @return Integer representing the size of the 'players' ArrayList.
+	 */
+	public int getSize() {
+		return players.size();
 	}
 
 }

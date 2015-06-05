@@ -14,6 +14,15 @@ import com.google.gson.Gson;
  */
 public class UserManager {
 
+	private static UserManager instance = new UserManager();
+
+	private UserManager() {
+	};
+
+	public static UserManager getInstance() {
+		return instance;
+	}
+
 	// gson Object used to parse json data.
 	static Gson gson = new Gson();
 
@@ -21,7 +30,20 @@ public class UserManager {
 
 	private static ArrayList<PlayerSummary.Player> trackedSummaries = FileHandler.getAllSummaries();
 
-	public static void addPlayer(String jData, String id, String lineOfData) {
+	// ArrayList of most recently added Users
+	private static ArrayList<User> lastAdded = new ArrayList<User>();
+
+	/**
+	 * Add player(s) to be tracked.
+	 * 
+	 * @param jData
+	 *            JSON data returned from Steam Web API.
+	 * @param ids
+	 *            Array of Steam Community ID of players to be added.
+	 * @param size
+	 *            The number of players currently in the Array.
+	 */
+	public void addPlayer(String jData, String[] ids, int size) {
 
 		// Deserialize JSON data into SteamUsers Object.
 		SteamUsers newUsr = gson.fromJson(jData, SteamUsers.class);
@@ -29,25 +51,34 @@ public class UserManager {
 		// Make sure a user has been found before adding to list.
 		if (!newUsr.isEmpty()) {
 
-			System.out.println("Adding " + newUsr.getPlayer(0).getSteamId() + " to the list!");
-
 			// Initialize Date
 			DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy");
 			Date date = new Date();
 			String dateAdded = dateFormat.format(date);
 
-			User currentUser = newUsr.getPlayer(0);
-			User user = new User(currentUser.getSteamId(), currentUser.getCommunityBanned(), currentUser.getVacBan(),
-					currentUser.getNumberOfBans(), currentUser.getDaysSinceLastBan(), currentUser.getEconomyBanned(),
-					dateAdded, currentUser.getNumberOfBans());
+			for (int i = 0; i < newUsr.getSize(); i++) {
 
-			trackedPlayers.add(user);
+				User currentUser = newUsr.getPlayer(i);
+				User user = new User(currentUser.getSteamId(), currentUser.getCommunityBanned(),
+						currentUser.getVacBan(), currentUser.getNumberOfBans(), currentUser.getDaysSinceLastBan(),
+						currentUser.getEconomyBanned(), dateAdded, currentUser.getNumberOfBans());
+
+				// Check if user is already being tracked
+				if (!trackedPlayers.contains(user)) {
+					trackedPlayers.add(user);
+					lastAdded.add(user);
+
+				} else {
+					System.out.println(user.getSteamId() + " is already being tracked!");
+				}
+
+			}
 
 			// Get Player Summaries and add to ArrayList.
-			parsePlayerSummary(id);
+			// parsePlayerSummary(id);
 
 		} else {
-			System.out.println("User with ID:" + id + " does not exist!");
+			System.out.println("User(s) does not exist!");
 		}
 
 	}
@@ -56,7 +87,7 @@ public class UserManager {
 	 * 
 	 * @return An int representing the number of players being tracked.
 	 */
-	public static int getNumOfPlayers() {
+	public int getNumOfPlayers() {
 		return trackedPlayers.size();
 	}
 
@@ -67,7 +98,7 @@ public class UserManager {
 	 *            Interger representing index of User you want returned.
 	 * @return User at specified index.
 	 */
-	public static User getPlayer(int playerToGet) {
+	public User getPlayer(int playerToGet) {
 		return trackedPlayers.get(playerToGet);
 	}
 
@@ -78,7 +109,7 @@ public class UserManager {
 	 *            Steam Community ID of User.
 	 * @return Boolean value, true if player is tracked, false if not.
 	 */
-	public static boolean isTracked(String cID) {
+	public boolean isTracked(String cID) {
 
 		ArrayList<User> users = FileHandler.getAllPlayers();
 
@@ -100,7 +131,7 @@ public class UserManager {
 	 * @return An integer value representing the number of times the substring
 	 *         occurs in the string.
 	 */
-	private static int countSubstring(String str, String subStr) {
+	private int countSubstring(String str, String subStr) {
 
 		int count = 0;
 
@@ -112,7 +143,7 @@ public class UserManager {
 
 	}
 
-	public static void parsePlayerSummary(String communityID) {
+	public void parsePlayerSummary(String communityID) {
 		String jsonData = SteamWebAPI.getPlayerSummaries(communityID);
 		PlayerSummary playerSummary = new PlayerSummary();
 		playerSummary = gson.fromJson(jsonData, PlayerSummary.class);
@@ -136,7 +167,7 @@ public class UserManager {
 	 * @param cID
 	 * @return
 	 */
-	public static boolean bannedSinceAdded(String cID) {
+	public boolean bannedSinceAdded(String cID) {
 
 		boolean found = false;
 
@@ -179,6 +210,21 @@ public class UserManager {
 				System.out.println(FileHandler.getAllPlayers().get(i).getSteamId() + " has a recent VAC ban!");
 			}
 		}
+	}
+
+	/**
+	 * 
+	 * @return ArrayList of User objects that contain the last added Users
+	 */
+	public ArrayList<User> getLastAdded() {
+		return lastAdded;
+	}
+
+	/**
+	 * Clear the ArrayList lastAdded for future use.
+	 */
+	public void clearLastAdded() {
+		lastAdded.clear();
 	}
 
 }
