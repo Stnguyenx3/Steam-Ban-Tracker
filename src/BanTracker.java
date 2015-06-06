@@ -6,6 +6,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -22,6 +30,12 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class BanTracker extends JFrame {
 
@@ -171,13 +185,65 @@ public class BanTracker extends JFrame {
 
 				if (userInput.contains("steamcommunity.com")) {
 
-					// User provided a Steam profile URL
-					if (userInput.contains("steamcommunity.com/id/")) {
+					int idCount = countSubstring(userInput, "steamcommunity.com/id/");
+					int profileCount = countSubstring(userInput, "steamcommunity.com/profiles/");
 
-					} else if (userInput.contains("steamcommunity.com/profiles/")) {
-
+					// Check for multiple URLs
+					if (idCount > 1 || profileCount > 1) {
+						textPane_1.setText("More than one URL was entered!");
 					} else {
-						textPane_1.setText("An error has occured, please make sure the URL is valid!");
+
+						String line;
+
+						try {
+
+							URL profileURL = new URL(userInput.replaceAll("\\s+", "") + "?xml=1");
+							URLConnection conn = profileURL.openConnection();
+							InputStream is = conn.getInputStream();
+							// Read information from URL and append to a
+							// string.
+							// Code taken from
+							// http://stackoverflow.com/questions/9856195/how-to-read-an-http-input-stream
+							BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
+							StringBuilder xmlResponse = new StringBuilder();
+							while ((line = reader.readLine()) != null) {
+								xmlResponse.append(line + "\n");
+							}
+
+							SAXParserFactory pFactory = SAXParserFactory.newInstance();
+							SAXParser parser = pFactory.newSAXParser();
+							SAXHandler handler = new SAXHandler();
+							parser.parse(new InputSource(new StringReader(xmlResponse.toString())), handler);
+
+							String[] cID = new String[] { handler.p.steamID };
+
+							String jsonData = SteamWebAPI.getInfo(cID);
+
+							uMInstance.addPlayer(jsonData, cID, 1);
+
+							if (uMInstance.getLastAdded().size() == 1) {
+								textPane_1.setText(cID[0] + " has been added.");
+							}
+
+							if (uMInstance.getCurrentlyTracked().size() == 1) {
+								textPane_1.setText(cID[0] + " is already being tracked!");
+							}
+
+						} catch (MalformedURLException e) {
+							textPane_1.setText("Please enter a valid URL!");
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (ParserConfigurationException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (SAXException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
 					}
 
 				} else if (userInput.contains("#")) {
@@ -213,23 +279,47 @@ public class BanTracker extends JFrame {
 
 						if (lA.size() > 0) {
 							textPane_1.setText("The following users have been added:\n");
-						}
 
-						for (int i = 0; i < lA.size(); i++) {
-							try {
-								doc.insertString(doc.getLength(), lA.get(i).getSteamId() + "\n", null);
-							} catch (BadLocationException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+							for (int i = 0; i < lA.size(); i++) {
+								try {
+									doc.insertString(doc.getLength(), lA.get(i).getSteamId() + "\n", null);
+								} catch (BadLocationException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							}
+
+							// Reset lastAdded for future use.
+							uMInstance.clearLastAdded();
+
+							// Reset comIDs for future use.
+							for (int i = 0; i < comIDs.length; i++) {
+								comIDs[i] = null;
+							}
+
 						}
 
-						// Reset lastAdded for future use.
-						uMInstance.clearLastAdded();
+						if (uMInstance.getCurrentlyTracked().size() > 0) {
+							try {
+								doc.insertString(doc.getLength(), "The following users are already being tracked:\n",
+										null);
+							} catch (BadLocationException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							for (int i = 0; i < uMInstance.getCurrentlyTracked().size(); i++) {
+								try {
+									doc.insertString(doc.getLength(), uMInstance.getCurrentlyTracked().get(i)
+											.getSteamId()
+											+ "\n", null);
+								} catch (BadLocationException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
 
-						// Reset comIDs for future use.
-						for (int i = 0; i < comIDs.length; i++) {
-							comIDs[i] = null;
+							// Reset for future use.
+							uMInstance.clearCurrentlyTracked();
 						}
 
 					}
@@ -338,6 +428,28 @@ public class BanTracker extends JFrame {
 
 		panel_6 = new JPanel();
 		tabbedPane.addTab("Settings", null, panel_6, null);
+
+	}
+
+	/**
+	 * Count the number of times a substring appears in a string.
+	 * 
+	 * @param str
+	 *            The string to be checked.
+	 * @param subStr
+	 *            The substring to check for.
+	 * @return An integer value representing the number of times the substring
+	 *         occurs in the string.
+	 */
+	private int countSubstring(String str, String subStr) {
+
+		int count = 0;
+
+		for (int i = str.indexOf(subStr); i != -1; i = str.indexOf(subStr, i + subStr.length())) {
+			count++;
+		}
+
+		return count;
 
 	}
 }

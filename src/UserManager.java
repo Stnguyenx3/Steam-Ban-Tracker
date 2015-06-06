@@ -30,8 +30,11 @@ public class UserManager {
 
 	private static ArrayList<PlayerSummary.Player> trackedSummaries = FileHandler.getAllSummaries();
 
-	// ArrayList of most recently added Users
+	// ArrayList containing the current requests User objects, used for displaying information to the user in .
 	private static ArrayList<User> lastAdded = new ArrayList<User>();
+	
+	// For the current request, an ArrayList containing Users that are already being tracked.
+	private static ArrayList<User> alreadyTracked = new ArrayList<User>();
 
 	/**
 	 * Add player(s) to be tracked.
@@ -67,9 +70,11 @@ public class UserManager {
 				if (!trackedPlayers.contains(user)) {
 					trackedPlayers.add(user);
 					lastAdded.add(user);
+					System.out.println(user.getSteamId() + " has been added!");
 
 				} else {
 					System.out.println(user.getSteamId() + " is already being tracked!");
+					alreadyTracked.add(user);
 				}
 
 			}
@@ -119,28 +124,6 @@ public class UserManager {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Count the number of times a substring appears in a string.
-	 * 
-	 * @param str
-	 *            The string to be checked.
-	 * @param subStr
-	 *            The substring to check for.
-	 * @return An integer value representing the number of times the substring
-	 *         occurs in the string.
-	 */
-	private int countSubstring(String str, String subStr) {
-
-		int count = 0;
-
-		for (int i = str.indexOf(subStr); i != -1; i = str.indexOf(subStr, i + subStr.length())) {
-			count++;
-		}
-
-		return count;
-
 	}
 
 	public void parsePlayerSummary(String communityID) {
@@ -225,6 +208,21 @@ public class UserManager {
 	 */
 	public void clearLastAdded() {
 		lastAdded.clear();
+	}
+	
+	/**
+	 * 
+	 * @return ArrayList containing User objects that are already being tracked.
+	 */
+	public ArrayList<User> getCurrentlyTracked() {
+		return alreadyTracked;
+	}
+	
+	/**
+	 * Clear the ArrayList alreadyTracked for future use.
+	 */
+	public void clearCurrentlyTracked() {
+		alreadyTracked.clear();
 	}
 
 }
