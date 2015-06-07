@@ -30,10 +30,12 @@ public class UserManager {
 
 	private static ArrayList<PlayerSummary.Player> trackedSummaries = FileHandler.getAllSummaries();
 
-	// ArrayList containing the current requests User objects, used for displaying information to the user in .
+	// ArrayList containing the current requests User objects, used for
+	// displaying information to the user in .
 	private static ArrayList<User> lastAdded = new ArrayList<User>();
-	
-	// For the current request, an ArrayList containing Users that are already being tracked.
+
+	// For the current request, an ArrayList containing Users that are already
+	// being tracked.
 	private static ArrayList<User> alreadyTracked = new ArrayList<User>();
 
 	/**
@@ -46,7 +48,7 @@ public class UserManager {
 	 * @param size
 	 *            The number of players currently in the Array.
 	 */
-	public void addPlayer(String jData, String[] ids, int size) {
+	public void addPlayer(String jData, String[] ids, int size, String[] rawData) {
 
 		// Deserialize JSON data into SteamUsers Object.
 		SteamUsers newUsr = gson.fromJson(jData, SteamUsers.class);
@@ -70,17 +72,19 @@ public class UserManager {
 				if (!trackedPlayers.contains(user)) {
 					trackedPlayers.add(user);
 					lastAdded.add(user);
-					System.out.println(user.getSteamId() + " has been added!");
 
 				} else {
-					System.out.println(user.getSteamId() + " is already being tracked!");
+					// System.out.println(user.getSteamId() +
+					// " is already being tracked!");
 					alreadyTracked.add(user);
 				}
 
 			}
 
-			// Get Player Summaries and add to ArrayList.
-			// parsePlayerSummary(id);
+			if (lastAdded.size() > 0) {
+				// Get Player Summaries and add to ArrayList.
+				parsePlayerSummary(lastAdded);
+			}
 
 		} else {
 			System.out.println("User(s) does not exist!");
@@ -126,18 +130,27 @@ public class UserManager {
 		return false;
 	}
 
-	public void parsePlayerSummary(String communityID) {
+	public void parsePlayerSummary(ArrayList<User> communityID) {
+
 		String jsonData = SteamWebAPI.getPlayerSummaries(communityID);
 		PlayerSummary playerSummary = new PlayerSummary();
-		playerSummary = gson.fromJson(jsonData, PlayerSummary.class);
 
-		System.out.println("Printing player summary...");
-		System.out.println(playerSummary);
+		if (!jsonData.equalsIgnoreCase("No Summaries.")) {
+			playerSummary = gson.fromJson(jsonData, PlayerSummary.class);
+		}
+
+		// System.out.println("Printing player summary...");
+		// System.out.println(playerSummary);
 
 		if (!playerSummary.response.isEmpty()) {
-			PlayerSummary.Player playerToAdd = playerSummary.response.getPlayer(0);
 
-			trackedSummaries.add(playerToAdd);
+			for (int i = 0; i < playerSummary.response.size(); i++) {
+
+				PlayerSummary.Player playerToAdd = playerSummary.response.getPlayer(i);
+
+				trackedSummaries.add(playerToAdd);
+
+			}
 
 		}
 
@@ -209,7 +222,7 @@ public class UserManager {
 	public void clearLastAdded() {
 		lastAdded.clear();
 	}
-	
+
 	/**
 	 * 
 	 * @return ArrayList containing User objects that are already being tracked.
@@ -217,7 +230,7 @@ public class UserManager {
 	public ArrayList<User> getCurrentlyTracked() {
 		return alreadyTracked;
 	}
-	
+
 	/**
 	 * Clear the ArrayList alreadyTracked for future use.
 	 */

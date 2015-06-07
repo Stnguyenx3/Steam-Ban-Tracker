@@ -176,6 +176,7 @@ public class BanTracker extends JFrame {
 				String[] uInput = null;
 				String[] comIDs = new String[50];
 				int comIDCounter = 0;
+				ArrayList<PlayerSummary.Player> summaries = FileHandler.getAllSummaries();
 
 				UserManager uMInstance = UserManager.getInstance();
 
@@ -196,7 +197,7 @@ public class BanTracker extends JFrame {
 						String line;
 
 						try {
-
+							uInput = new String[] { userInput };
 							URL profileURL = new URL(userInput.replaceAll("\\s+", "") + "?xml=1");
 							URLConnection conn = profileURL.openConnection();
 							InputStream is = conn.getInputStream();
@@ -220,15 +221,40 @@ public class BanTracker extends JFrame {
 
 							String jsonData = SteamWebAPI.getInfo(cID);
 
-							uMInstance.addPlayer(jsonData, cID, 1);
+							uMInstance.addPlayer(jsonData, cID, 1, uInput);
 
 							if (uMInstance.getLastAdded().size() == 1) {
-								textPane_1.setText(cID[0] + " has been added.");
+
+								for (int j = 0; j < summaries.size(); j++) {
+									if (uMInstance.getLastAdded().get(0).getSteamId()
+											.equalsIgnoreCase(summaries.get(j).getSteamID())) {
+
+										textPane_1.setText(summaries.get(j).getPersonaName() + " has been added.");
+
+									}
+								}
+
 							}
 
 							if (uMInstance.getCurrentlyTracked().size() == 1) {
-								textPane_1.setText(cID[0] + " is already being tracked!");
+
+								for (int j = 0; j < summaries.size(); j++) {
+									if (uMInstance.getCurrentlyTracked().get(0).getSteamId()
+											.equalsIgnoreCase(summaries.get(j).getSteamID())) {
+
+										textPane_1.setText(summaries.get(j).getPersonaName()
+												+ " is already being tracked!");
+
+									}
+								}
+
 							}
+
+							// Reset lastAdded for future use.
+							uMInstance.clearLastAdded();
+
+							// Reset for future use.
+							uMInstance.clearCurrentlyTracked();
 
 						} catch (MalformedURLException e) {
 							textPane_1.setText("Please enter a valid URL!");
@@ -274,15 +300,31 @@ public class BanTracker extends JFrame {
 						jsonData = SteamWebAPI.getInfo(comIDs);
 
 						// Add user
-						uMInstance.addPlayer(jsonData, comIDs, comIDCounter);
+						uMInstance.addPlayer(jsonData, comIDs, comIDCounter, uInput);
+
+						// Reset comIDs for future use.
+						for (int i = 0; i < comIDs.length; i++) {
+							comIDs[i] = null;
+						}
+
 						ArrayList<User> lA = uMInstance.getLastAdded();
+						// ArrayList<PlayerSummary.Player> summaries =
+						// FileHandler.getAllSummaries();
 
 						if (lA.size() > 0) {
 							textPane_1.setText("The following users have been added:\n");
 
 							for (int i = 0; i < lA.size(); i++) {
 								try {
-									doc.insertString(doc.getLength(), lA.get(i).getSteamId() + "\n", null);
+
+									for (int j = 0; j < summaries.size(); j++) {
+										if (lA.get(i).getSteamId().equalsIgnoreCase(summaries.get(j).getSteamID())) {
+											doc.insertString(doc.getLength(), i + 1 + ") "
+													+ summaries.get(j).getPersonaName() + " (ID="
+													+ summaries.get(j).getSteamID() + ")" + "\n", null);
+										}
+									}
+
 								} catch (BadLocationException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -292,14 +334,10 @@ public class BanTracker extends JFrame {
 							// Reset lastAdded for future use.
 							uMInstance.clearLastAdded();
 
-							// Reset comIDs for future use.
-							for (int i = 0; i < comIDs.length; i++) {
-								comIDs[i] = null;
-							}
-
 						}
 
 						if (uMInstance.getCurrentlyTracked().size() > 0) {
+
 							try {
 								doc.insertString(doc.getLength(), "The following users are already being tracked:\n",
 										null);
@@ -307,20 +345,30 @@ public class BanTracker extends JFrame {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
 							}
+
 							for (int i = 0; i < uMInstance.getCurrentlyTracked().size(); i++) {
-								try {
-									doc.insertString(doc.getLength(), uMInstance.getCurrentlyTracked().get(i)
-											.getSteamId()
-											+ "\n", null);
-								} catch (BadLocationException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+								for (int j = 0; j < summaries.size(); j++) {
+									try {
+										if (uMInstance.getCurrentlyTracked().get(i).getSteamId()
+												.equalsIgnoreCase(summaries.get(j).getSteamID())) {
+
+											doc.insertString(doc.getLength(), summaries.get(j).getPersonaName()
+													+ " (ID=" + summaries.get(j).getSteamID() + ")" + "\n", null);
+
+										}
+
+									} catch (BadLocationException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+
+									}
 								}
 							}
 
-							// Reset for future use.
-							uMInstance.clearCurrentlyTracked();
 						}
+
+						// Reset for future use.
+						uMInstance.clearCurrentlyTracked();
 
 					}
 				} else {

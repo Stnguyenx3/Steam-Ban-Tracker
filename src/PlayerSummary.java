@@ -25,6 +25,11 @@ public class PlayerSummary {
 			return players.get(index);
 		}
 
+		/**
+		 * 
+		 * @return Boolean value true if players ArrayList is empty, false
+		 *         otherwise.
+		 */
 		public boolean isEmpty() {
 			if (players.isEmpty()) {
 				return true;
@@ -33,6 +38,21 @@ public class PlayerSummary {
 			}
 		}
 
+		/**
+		 * 
+		 * @return Integer value representing the size of players ArrayList.
+		 */
+		public int size() {
+			return players.size();
+
+		}
+
+		/**
+		 * Add a player to the players ArrayList.
+		 * 
+		 * @param player
+		 *            The Player to be added.
+		 */
 		public void addPlayer(Player player) {
 			players.add(player);
 		}
@@ -102,8 +122,8 @@ public class PlayerSummary {
 
 		@Override
 		public String toString() {
-			return "<<" + "SteamID = " + steamid + "    " + "Name = " + personaname + "    " + "Public/Private = "
-					+ communityvisibilitystate + "    " + "Account created = " + timecreated + ">>";
+			return "\n<" + "SteamID = " + steamid + "    " + "Name = " + personaname + "    " + "Public/Private = "
+					+ communityvisibilitystate + "    " + "Account created = " + timecreated + ">";
 		}
 
 	}
