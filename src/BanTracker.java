@@ -1,8 +1,11 @@
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -16,6 +19,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -144,16 +150,17 @@ public class BanTracker extends JFrame {
 		lblDesc = new JLabel();
 		lblDesc.setVerticalAlignment(SwingConstants.TOP);
 		lblDesc.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
-		lblDesc.setBounds(30, 11, 559, 301);
+		lblDesc.setBounds(30, 11, 559, 450);
 		lblDesc.setText("<html>This program allows you to track CSGO players for Overwatch and VAC bans. "
 				+ "You may use this program to keep track of players from your competitive matchmaking games.<br><br>"
 				+ "<u>Instructions:</u><br><br> To add multiple players at once<br>1) Once all players have connected, "
 				+ "from the CSGO game console*, use the command \"<font color='red'>status</font>\" to obtain player"
 				+ " information for the current competitive game.<br> 2) Copy and paste the output from the console "
 				+ "into the text field in the \"Add Users\" tab and click \"Process Information\"<br><br>"
-				// + "To add a single player by their Steam profile URL<br>"
-				// + "1)"
-				+ "<html>");
+				+ "To add a single player by their Steam profile URL<br>"
+				+ "1) Copy and paste their profile URL into the text field and click \"Process Information\".<br><br>"
+				+ "Note: To enable the developers console in CS:GO, go to options -> Game Settings and change the option to Yes."
+				+ " You can then access the console using the tilde key `." + "<html>");
 		panelHome.add(lblDesc);
 
 		textPane = new JTextPane();
@@ -308,8 +315,6 @@ public class BanTracker extends JFrame {
 						}
 
 						ArrayList<User> lA = uMInstance.getLastAdded();
-						// ArrayList<PlayerSummary.Player> summaries =
-						// FileHandler.getAllSummaries();
 
 						if (lA.size() > 0) {
 							textPane_1.setText("The following users have been added:\n");
@@ -411,6 +416,187 @@ public class BanTracker extends JFrame {
 		panel_2 = new JPanel();
 		tabbedPane.addTab("Recently Added Users", null, panel_2, null);
 		panel_2.setLayout(null);
+
+		JLabel lblInfo1 = new JLabel("Refreshing may take a while!");
+		lblInfo1.setVerticalAlignment(SwingConstants.TOP);
+		lblInfo1.setHorizontalAlignment(SwingConstants.CENTER);
+		lblInfo1.setBounds(10, 63, 603, 367);
+		lblInfo1.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+		panel_2.add(lblInfo1);
+
+		JButton btnRefresh = new JButton("Refresh");
+		btnRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
+				lblInfo1.setText("");
+
+				int numOfPlayers = FileHandler.getAllPlayers().size() - 1;
+
+				if (numOfPlayers >= 9) {
+					try {
+
+						URL url1 = new URL(FileHandler.getAllSummaries().get(numOfPlayers - 9).getAvatarMedium());
+						Image img1 = ImageIO.read(url1);
+						JLabel lblAvatar1 = new JLabel(new ImageIcon(img1));
+						lblAvatar1.setBounds(10, 61, 64, 64);
+						panel_2.add(lblAvatar1);
+						lblAvatar1.addMouseListener(new MouseAdapter() {
+							public void mouseClicked(MouseEvent e) {
+								System.out.println("JLabel has been clicked!");
+							}
+						});
+						JLabel lblAvatar1Info = new JLabel(FileHandler.getAllSummaries().get(numOfPlayers - 9)
+								.getPersonaName());
+						lblAvatar1Info.setBounds(80, 61, 225, 25);
+						panel_2.add(lblAvatar1Info);
+
+						URL url2 = new URL(FileHandler.getAllSummaries().get(numOfPlayers - 8).getAvatarMedium());
+						Image img2 = ImageIO.read(url2);
+						JLabel lblAvatar2 = new JLabel(new ImageIcon(img2));
+						lblAvatar2.setBounds(10, 135, 64, 64);
+						panel_2.add(lblAvatar2);
+						lblAvatar2.addMouseListener(new MouseAdapter() {
+							public void mouseClicked(MouseEvent e) {
+								System.out.println("JLabel has been clicked!");
+							}
+						});
+						JLabel lblAvatar2Info = new JLabel(FileHandler.getAllSummaries().get(numOfPlayers - 8)
+								.getPersonaName());
+						lblAvatar2Info.setBounds(80, 135, 225, 25);
+						panel_2.add(lblAvatar2Info);
+
+						URL url3 = new URL(FileHandler.getAllSummaries().get(numOfPlayers - 7).getAvatarMedium());
+						Image img3 = ImageIO.read(url3);
+						JLabel lblAvatar3 = new JLabel(new ImageIcon(img3));
+						lblAvatar3.setBounds(10, 209, 64, 64);
+						panel_2.add(lblAvatar3);
+						lblAvatar3.addMouseListener(new MouseAdapter() {
+							public void mouseClicked(MouseEvent e) {
+								System.out.println("JLabel has been clicked!");
+							}
+						});
+						JLabel lblAvatar3Info = new JLabel(FileHandler.getAllSummaries().get(numOfPlayers - 7)
+								.getPersonaName());
+						lblAvatar3Info.setBounds(80, 209, 225, 25);
+						panel_2.add(lblAvatar3Info);
+
+						URL url4 = new URL(FileHandler.getAllSummaries().get(numOfPlayers - 6).getAvatarMedium());
+						Image img4 = ImageIO.read(url4);
+						JLabel lblAvatar4 = new JLabel(new ImageIcon(img4));
+						lblAvatar4.setBounds(10, 283, 64, 64);
+						panel_2.add(lblAvatar4);
+						lblAvatar4.addMouseListener(new MouseAdapter() {
+							public void mouseClicked(MouseEvent e) {
+								System.out.println("JLabel has been clicked!");
+							}
+						});
+						JLabel lblAvatar4Info = new JLabel(FileHandler.getAllSummaries().get(numOfPlayers - 6)
+								.getPersonaName());
+						lblAvatar4Info.setBounds(80, 283, 225, 25);
+						panel_2.add(lblAvatar4Info);
+
+						URL url5 = new URL(FileHandler.getAllSummaries().get(numOfPlayers - 5).getAvatarMedium());
+						Image img5 = ImageIO.read(url5);
+						JLabel lblAvatar5 = new JLabel(new ImageIcon(img5));
+						lblAvatar5.setBounds(10, 357, 64, 64);
+						panel_2.add(lblAvatar5);
+						lblAvatar5.addMouseListener(new MouseAdapter() {
+							public void mouseClicked(MouseEvent e) {
+								System.out.println("JLabel has been clicked!");
+							}
+						});
+						JLabel lblAvatar5Info = new JLabel(FileHandler.getAllSummaries().get(numOfPlayers - 5)
+								.getPersonaName());
+						lblAvatar5Info.setBounds(80, 357, 225, 25);
+						panel_2.add(lblAvatar5Info);
+
+						URL url6 = new URL(FileHandler.getAllSummaries().get(numOfPlayers - 4).getAvatarMedium());
+						Image img6 = ImageIO.read(url6);
+						JLabel lblAvatar6 = new JLabel(new ImageIcon(img6));
+						lblAvatar6.setBounds(310, 61, 64, 64);
+						panel_2.add(lblAvatar6);
+						lblAvatar6.addMouseListener(new MouseAdapter() {
+							public void mouseClicked(MouseEvent e) {
+								System.out.println("JLabel has been clicked!");
+							}
+						});
+						JLabel lblAvatar6Info = new JLabel(FileHandler.getAllSummaries().get(numOfPlayers - 4)
+								.getPersonaName());
+						lblAvatar6Info.setBounds(380, 61, 225, 25);
+						panel_2.add(lblAvatar6Info);
+
+						URL url7 = new URL(FileHandler.getAllSummaries().get(numOfPlayers - 3).getAvatarMedium());
+						Image img7 = ImageIO.read(url7);
+						JLabel lblAvatar7 = new JLabel(new ImageIcon(img7));
+						lblAvatar7.setBounds(310, 135, 64, 64);
+						panel_2.add(lblAvatar7);
+						lblAvatar7.addMouseListener(new MouseAdapter() {
+							public void mouseClicked(MouseEvent e) {
+								System.out.println("JLabel has been clicked!");
+							}
+						});
+						JLabel lblAvatar7Info = new JLabel(FileHandler.getAllSummaries().get(numOfPlayers - 3)
+								.getPersonaName());
+						lblAvatar7Info.setBounds(380, 135, 225, 25);
+						panel_2.add(lblAvatar7Info);
+
+						URL url8 = new URL(FileHandler.getAllSummaries().get(numOfPlayers - 2).getAvatarMedium());
+						Image img8 = ImageIO.read(url8);
+						JLabel lblAvatar8 = new JLabel(new ImageIcon(img8));
+						lblAvatar8.setBounds(310, 209, 64, 64);
+						panel_2.add(lblAvatar8);
+						lblAvatar8.addMouseListener(new MouseAdapter() {
+							public void mouseClicked(MouseEvent e) {
+								System.out.println("JLabel has been clicked!");
+							}
+						});
+						JLabel lblAvatar8Info = new JLabel(FileHandler.getAllSummaries().get(numOfPlayers - 2)
+								.getPersonaName());
+						lblAvatar8Info.setBounds(380, 209, 225, 25);
+						panel_2.add(lblAvatar8Info);
+
+						URL url9 = new URL(FileHandler.getAllSummaries().get(numOfPlayers - 1).getAvatarMedium());
+						Image img9 = ImageIO.read(url9);
+						JLabel lblAvatar9 = new JLabel(new ImageIcon(img9));
+						lblAvatar9.setBounds(310, 283, 64, 64);
+						panel_2.add(lblAvatar9);
+						lblAvatar9.addMouseListener(new MouseAdapter() {
+							public void mouseClicked(MouseEvent e) {
+								System.out.println("JLabel has been clicked!");
+							}
+						});
+						JLabel lblAvatar9Info = new JLabel(FileHandler.getAllSummaries().get(numOfPlayers - 1)
+								.getPersonaName());
+						lblAvatar9Info.setBounds(380, 283, 225, 25);
+						panel_2.add(lblAvatar9Info);
+
+						URL url10 = new URL(FileHandler.getAllSummaries().get(numOfPlayers).getAvatarMedium());
+						Image img10 = ImageIO.read(url10);
+						JLabel lblAvatar10 = new JLabel(new ImageIcon(img10));
+						lblAvatar10.setBounds(310, 357, 64, 64);
+						panel_2.add(lblAvatar10);
+						lblAvatar10.addMouseListener(new MouseAdapter() {
+							public void mouseClicked(MouseEvent e) {
+								System.out.println("JLabel has been clicked!");
+							}
+						});
+						JLabel lblAvatar10Info = new JLabel(FileHandler.getAllSummaries().get(numOfPlayers)
+								.getPersonaName());
+						lblAvatar10Info.setBounds(380, 357, 225, 25);
+						panel_2.add(lblAvatar10Info);
+
+					} catch (IOException ioE) {
+						ioE.printStackTrace();
+					}
+
+				} else {
+					lblInfo1.setText("At least 10 players must be added!");
+				}
+
+			}
+		});
+		btnRefresh.setBounds(10, 11, 603, 40);
+		panel_2.add(btnRefresh);
 
 		panel_3 = new JPanel();
 		tabbedPane.addTab("Find A User", null, panel_3, null);
