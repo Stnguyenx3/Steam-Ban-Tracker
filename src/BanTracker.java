@@ -446,6 +446,106 @@ public class BanTracker extends JFrame {
 		lblInfo1.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
 		panel_2.add(lblInfo1);
 
+		lblAvatar1.setBounds(10, 61, 64, 64);
+		lblAvatar1Info.setBounds(80, 61, 225, 25);
+		lblAvatar1.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				System.out.println("JLabel has been clicked!");
+			}
+		});
+		panel_2.add(lblAvatar1);
+		panel_2.add(lblAvatar1Info);
+
+		lblAvatar2.setBounds(10, 135, 64, 64);
+		lblAvatar2Info.setBounds(80, 135, 225, 25);
+		lblAvatar2.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				System.out.println("JLabel has been clicked!");
+			}
+		});
+		panel_2.add(lblAvatar2);
+		panel_2.add(lblAvatar2Info);
+
+		lblAvatar3.setBounds(10, 209, 64, 64);
+		lblAvatar3Info.setBounds(80, 209, 225, 25);
+		lblAvatar3.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				System.out.println("JLabel has been clicked!");
+			}
+		});
+		panel_2.add(lblAvatar3);
+		panel_2.add(lblAvatar3Info);
+
+		lblAvatar4.setBounds(10, 283, 64, 64);
+		lblAvatar4Info.setBounds(80, 283, 225, 25);
+		lblAvatar4.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				System.out.println("JLabel has been clicked!");
+			}
+		});
+		panel_2.add(lblAvatar4);
+		panel_2.add(lblAvatar4Info);
+
+		lblAvatar5.setBounds(10, 357, 64, 64);
+		lblAvatar5Info.setBounds(80, 357, 225, 25);
+		lblAvatar5.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				System.out.println("JLabel has been clicked!");
+			}
+		});
+		panel_2.add(lblAvatar5);
+		panel_2.add(lblAvatar5Info);
+
+		lblAvatar6.setBounds(310, 61, 64, 64);
+		lblAvatar6Info.setBounds(380, 61, 225, 25);
+		lblAvatar6.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				System.out.println("JLabel has been clicked!");
+			}
+		});
+		panel_2.add(lblAvatar6);
+		panel_2.add(lblAvatar6Info);
+
+		lblAvatar7.setBounds(310, 135, 64, 64);
+		lblAvatar7Info.setBounds(380, 135, 225, 25);
+		lblAvatar7.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				System.out.println("JLabel has been clicked!");
+			}
+		});
+		panel_2.add(lblAvatar7);
+		panel_2.add(lblAvatar7Info);
+
+		lblAvatar8.setBounds(310, 209, 64, 64);
+		lblAvatar8Info.setBounds(380, 209, 225, 25);
+		lblAvatar8.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				System.out.println("JLabel has been clicked!");
+			}
+		});
+		panel_2.add(lblAvatar8);
+		panel_2.add(lblAvatar8Info);
+
+		lblAvatar9.setBounds(310, 283, 64, 64);
+		lblAvatar9Info.setBounds(380, 283, 225, 25);
+		lblAvatar9.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				System.out.println("JLabel has been clicked!");
+			}
+		});
+		panel_2.add(lblAvatar9);
+		panel_2.add(lblAvatar9Info);
+
+		lblAvatar10.setBounds(310, 357, 64, 64);
+		lblAvatar10Info.setBounds(380, 357, 225, 25);
+		lblAvatar10.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				System.out.println("JLabel has been clicked!");
+			}
+		});
+		panel_2.add(lblAvatar10);
+		panel_2.add(lblAvatar10Info);
+
 		JButton btnRefresh = new JButton("Refresh");
 		btnRefresh.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -461,160 +561,71 @@ public class BanTracker extends JFrame {
 								.getAvatarMedium());
 						Image img1 = ImageIO.read(url1);
 						lblAvatar1.setIcon(new ImageIcon(img1));
-						lblAvatar1.setBounds(10, 61, 64, 64);
-						panel_2.add(lblAvatar1);
-						lblAvatar1.addMouseListener(new MouseAdapter() {
-							public void mouseClicked(MouseEvent e) {
-								System.out.println("JLabel has been clicked!");
-							}
-						});
 						lblAvatar1Info.setText(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 9)
 								.getPersonaName());
-						lblAvatar1Info.setBounds(80, 61, 225, 25);
-						panel_2.add(lblAvatar1Info);
 
 						URL url2 = new URL(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 8)
 								.getAvatarMedium());
 						Image img2 = ImageIO.read(url2);
 						lblAvatar2.setIcon(new ImageIcon(img2));
-						lblAvatar2.setBounds(10, 135, 64, 64);
-						panel_2.add(lblAvatar2);
-						lblAvatar2.addMouseListener(new MouseAdapter() {
-							public void mouseClicked(MouseEvent e) {
-								System.out.println("JLabel has been clicked!");
-							}
-						});
+
 						lblAvatar2Info.setText(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 8)
 								.getPersonaName());
-						lblAvatar2Info.setBounds(80, 135, 225, 25);
-						panel_2.add(lblAvatar2Info);
 
 						URL url3 = new URL(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 7)
 								.getAvatarMedium());
 						Image img3 = ImageIO.read(url3);
 						lblAvatar3.setIcon(new ImageIcon(img3));
-						lblAvatar3.setBounds(10, 209, 64, 64);
-						panel_2.add(lblAvatar3);
-						lblAvatar3.addMouseListener(new MouseAdapter() {
-							public void mouseClicked(MouseEvent e) {
-								System.out.println("JLabel has been clicked!");
-							}
-						});
 						lblAvatar3Info.setText(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 7)
 								.getPersonaName());
-						lblAvatar3Info.setBounds(80, 209, 225, 25);
-						panel_2.add(lblAvatar3Info);
 
 						URL url4 = new URL(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 6)
 								.getAvatarMedium());
 						Image img4 = ImageIO.read(url4);
 						lblAvatar4.setIcon(new ImageIcon(img4));
-						lblAvatar4.setBounds(10, 283, 64, 64);
-						panel_2.add(lblAvatar4);
-						lblAvatar4.addMouseListener(new MouseAdapter() {
-							public void mouseClicked(MouseEvent e) {
-								System.out.println("JLabel has been clicked!");
-							}
-						});
 						lblAvatar4Info.setText(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 6)
 								.getPersonaName());
-						lblAvatar4Info.setBounds(80, 283, 225, 25);
-						panel_2.add(lblAvatar4Info);
 
 						URL url5 = new URL(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 5)
 								.getAvatarMedium());
 						Image img5 = ImageIO.read(url5);
 						lblAvatar5.setIcon(new ImageIcon(img5));
-						lblAvatar5.setBounds(10, 357, 64, 64);
-						panel_2.add(lblAvatar5);
-						lblAvatar5.addMouseListener(new MouseAdapter() {
-							public void mouseClicked(MouseEvent e) {
-								System.out.println("JLabel has been clicked!");
-							}
-						});
 						lblAvatar5Info.setText(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 5)
 								.getPersonaName());
-						lblAvatar5Info.setBounds(80, 357, 225, 25);
-						panel_2.add(lblAvatar5Info);
 
 						URL url6 = new URL(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 4)
 								.getAvatarMedium());
 						Image img6 = ImageIO.read(url6);
 						lblAvatar6.setIcon(new ImageIcon(img6));
-						lblAvatar6.setBounds(310, 61, 64, 64);
-						panel_2.add(lblAvatar6);
-						lblAvatar6.addMouseListener(new MouseAdapter() {
-							public void mouseClicked(MouseEvent e) {
-								System.out.println("JLabel has been clicked!");
-							}
-						});
 						lblAvatar6Info.setText(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 4)
 								.getPersonaName());
-						lblAvatar6Info.setBounds(380, 61, 225, 25);
-						panel_2.add(lblAvatar6Info);
 
 						URL url7 = new URL(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 3)
 								.getAvatarMedium());
 						Image img7 = ImageIO.read(url7);
 						lblAvatar7.setIcon(new ImageIcon(img7));
-						lblAvatar7.setBounds(310, 135, 64, 64);
-						panel_2.add(lblAvatar7);
-						lblAvatar7.addMouseListener(new MouseAdapter() {
-							public void mouseClicked(MouseEvent e) {
-								System.out.println("JLabel has been clicked!");
-							}
-						});
 						lblAvatar7Info.setText(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 3)
 								.getPersonaName());
-						lblAvatar7Info.setBounds(380, 135, 225, 25);
-						panel_2.add(lblAvatar7Info);
 
 						URL url8 = new URL(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 2)
 								.getAvatarMedium());
 						Image img8 = ImageIO.read(url8);
 						lblAvatar8.setIcon(new ImageIcon(img8));
-						lblAvatar8.setBounds(310, 209, 64, 64);
-						panel_2.add(lblAvatar8);
-						lblAvatar8.addMouseListener(new MouseAdapter() {
-							public void mouseClicked(MouseEvent e) {
-								System.out.println("JLabel has been clicked!");
-							}
-						});
 						lblAvatar8Info.setText(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 2)
 								.getPersonaName());
-						lblAvatar8Info.setBounds(380, 209, 225, 25);
-						panel_2.add(lblAvatar8Info);
 
 						URL url9 = new URL(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 1)
 								.getAvatarMedium());
 						Image img9 = ImageIO.read(url9);
 						lblAvatar9.setIcon(new ImageIcon(img9));
-						lblAvatar9.setBounds(310, 283, 64, 64);
-						panel_2.add(lblAvatar9);
-						lblAvatar9.addMouseListener(new MouseAdapter() {
-							public void mouseClicked(MouseEvent e) {
-								System.out.println("JLabel has been clicked!");
-							}
-						});
 						lblAvatar9Info.setText(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 1)
 								.getPersonaName());
-						lblAvatar9Info.setBounds(380, 283, 225, 25);
-						panel_2.add(lblAvatar9Info);
 
 						URL url10 = new URL(FileHandler.getAllSummariesUnsorted().get(numOfPlayers).getAvatarMedium());
 						Image img10 = ImageIO.read(url10);
 						lblAvatar10.setIcon(new ImageIcon(img10));
-						lblAvatar10.setBounds(310, 357, 64, 64);
-						panel_2.add(lblAvatar10);
-						lblAvatar10.addMouseListener(new MouseAdapter() {
-							public void mouseClicked(MouseEvent e) {
-								System.out.println("JLabel has been clicked!");
-							}
-						});
 						lblAvatar10Info.setText(FileHandler.getAllSummariesUnsorted().get(numOfPlayers)
 								.getPersonaName());
-						lblAvatar10Info.setBounds(380, 357, 225, 25);
-						panel_2.add(lblAvatar10Info);
 
 					} catch (IOException ioE) {
 						ioE.printStackTrace();
