@@ -6,7 +6,7 @@ import java.io.Serializable;
  * @author Steven
  *
  */
-public class User implements Serializable {
+public class User implements Serializable, Comparable<User> {
 
 	// Variable names are set by the Steam Web API, (does not use camelCase).
 	private String SteamId;
@@ -128,5 +128,16 @@ public class User implements Serializable {
 				+ "  Number Of Vac Bans:" + NumberOfVACBans + ",\r\n" + "  Days Since Last Ban:" + DaysSinceLastBan
 				+ ",\r\n" + "  Date Added:" + dateAdded + "}");
 
+	}
+
+	@Override
+	public int compareTo(User u) {
+		if (Long.valueOf(this.getSteamId()).compareTo(Long.valueOf(u.getSteamId())) < 0) {
+			return -1;
+		} else if (Long.valueOf(this.getSteamId()).compareTo(Long.valueOf(u.getSteamId())) > 0) {
+			return 1;
+		} else {
+			return 0;
+		}
 	}
 }

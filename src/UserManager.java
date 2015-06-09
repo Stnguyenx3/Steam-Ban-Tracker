@@ -1,6 +1,7 @@
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 import com.google.gson.Gson;
@@ -85,6 +86,10 @@ public class UserManager {
 				// Get Player Summaries and add to ArrayList.
 				parsePlayerSummary(lastAdded);
 			}
+			
+			// Sort trackedPlayers and trackedSummaries so the player and their summaries match.
+			Collections.sort(trackedPlayers);
+			Collections.sort(trackedSummaries);
 
 		} else {
 			System.out.println("User(s) does not exist!");

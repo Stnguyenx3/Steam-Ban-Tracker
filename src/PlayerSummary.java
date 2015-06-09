@@ -64,7 +64,7 @@ public class PlayerSummary {
 
 	}
 
-	class Player implements Serializable {
+	class Player implements Serializable, Comparable<Player> {
 		private String steamid;
 		private String communityvisibilitystate;
 		private String profilestate;
@@ -126,6 +126,16 @@ public class PlayerSummary {
 					+ communityvisibilitystate + "    " + "Account created = " + timecreated + ">";
 		}
 
+		@Override
+		public int compareTo(Player p) {
+			if (Long.valueOf(this.getSteamID()).compareTo(Long.valueOf(p.getSteamID())) < 0) {
+				return -1;
+			} else if (Long.valueOf(this.getSteamID()).compareTo(Long.valueOf(p.getSteamID())) > 0) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
 	}
 
 	public String toString() {
