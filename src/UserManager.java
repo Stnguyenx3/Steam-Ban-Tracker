@@ -154,6 +154,8 @@ public class UserManager {
 				PlayerSummary.Player playerToAdd = playerSummary.response.getPlayer(i);
 
 				trackedSummaries.add(playerToAdd);
+				
+				FileHandler.getAllSummariesUnsorted().add(playerToAdd);
 
 			}
 
