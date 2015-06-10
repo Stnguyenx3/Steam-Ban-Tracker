@@ -53,3 +53,4 @@ users.tmp
 apikey.txt
 *.html
 unsorted.tmp
+*.tmp

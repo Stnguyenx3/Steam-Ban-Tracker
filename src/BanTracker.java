@@ -48,13 +48,14 @@ public class BanTracker extends JFrame {
 	private JLabel lblDesc;
 	private JTextPane textPane;
 	private JPanel panel_1;
-	private JTextPane textPane_2;
 	private JPanel panel_2;
 	private JPanel panel_4;
 	private JPanel panel_5;
 	private JPanel panel_3;
 	private JPanel panel_6;
 	private JTextPane textPane_1;
+	private JTextPane textPane_2;
+	private JTextPane textPane_3;
 	private JScrollPane scrollPane_1;
 
 	JLabel lblAvatar1 = new JLabel();
@@ -120,7 +121,7 @@ public class BanTracker extends JFrame {
 							// if (confirm == JOptionPane.YES_OPTION) {
 							FileHandler.writeToFile("users.tmp", FileHandler.getAllPlayers());
 							FileHandler.writeToFile("summaries.tmp", FileHandler.getAllSummaries());
-							FileHandler.writeToFile("unsorted.tmp", FileHandler.getAllSummariesUnsorted());
+							FileHandler.writeToFile("s_unsorted.tmp", FileHandler.getAllSummariesUnsorted());
 							System.out.println("Finished saving...");
 							// System.exit(0);
 							// }
@@ -140,7 +141,7 @@ public class BanTracker extends JFrame {
 
 		System.out.println("Loading program...");
 		FileHandler.readFromFile("users.tmp", "ArrayList<User>");
-		FileHandler.readFromFile("unsorted.tmp", "ArrayList<PlayerSummary.Player>");
+		FileHandler.readFromFile("s_unsorted.tmp", "ArrayList<PlayerSummary.Player>");
 		FileHandler.readFromFile("summaries.tmp", "ArrayList<PlayerSummary.Player>");
 
 	}
@@ -428,7 +429,6 @@ public class BanTracker extends JFrame {
 
 		textPane_1 = new JTextPane();
 		textPane_1.setEditable(false);
-		textPane_1.setFocusable(false);
 		textPane_1.setBounds(10, 457, 599, 265);
 		scrollPane_1 = new JScrollPane(textPane_1);
 		scrollPane_1.setBounds(10, 457, 599, 265);
@@ -446,11 +446,26 @@ public class BanTracker extends JFrame {
 		lblInfo1.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
 		panel_2.add(lblInfo1);
 
+		textPane_3 = new JTextPane();
+		textPane_3.setText("Click on a profile to get more information!");
+		textPane_3.setEditable(false);
+		textPane_3.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		textPane_3.setBounds(10, 441, 615, 291);
+		panel_2.add(textPane_3);
+
+		Document doc = textPane_3.getDocument();
+		ArrayList<PlayerSummary.Player> summaries = FileHandler.getAllSummariesUnsorted();
+		ArrayList<User> players = FileHandler.getAllPlayers();
+
 		lblAvatar1.setBounds(10, 61, 64, 64);
 		lblAvatar1Info.setBounds(80, 61, 225, 25);
 		lblAvatar1.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("JLabel has been clicked!");
+
+				int playerIndex = getIndex(players, summaries, 10);
+				textPane_3.setText("");
+				displayInfo(players, summaries, doc, playerIndex, 10);
+
 			}
 		});
 		panel_2.add(lblAvatar1);
@@ -460,7 +475,11 @@ public class BanTracker extends JFrame {
 		lblAvatar2Info.setBounds(80, 135, 225, 25);
 		lblAvatar2.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("JLabel has been clicked!");
+
+				int playerIndex = getIndex(players, summaries, 9);
+				textPane_3.setText("");
+				displayInfo(players, summaries, doc, playerIndex, 9);
+
 			}
 		});
 		panel_2.add(lblAvatar2);
@@ -470,7 +489,11 @@ public class BanTracker extends JFrame {
 		lblAvatar3Info.setBounds(80, 209, 225, 25);
 		lblAvatar3.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("JLabel has been clicked!");
+
+				int playerIndex = getIndex(players, summaries, 8);
+				textPane_3.setText("");
+				displayInfo(players, summaries, doc, playerIndex, 8);
+
 			}
 		});
 		panel_2.add(lblAvatar3);
@@ -480,7 +503,11 @@ public class BanTracker extends JFrame {
 		lblAvatar4Info.setBounds(80, 283, 225, 25);
 		lblAvatar4.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("JLabel has been clicked!");
+
+				int playerIndex = getIndex(players, summaries, 7);
+				textPane_3.setText("");
+				displayInfo(players, summaries, doc, playerIndex, 7);
+
 			}
 		});
 		panel_2.add(lblAvatar4);
@@ -490,7 +517,11 @@ public class BanTracker extends JFrame {
 		lblAvatar5Info.setBounds(80, 357, 225, 25);
 		lblAvatar5.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("JLabel has been clicked!");
+
+				int playerIndex = getIndex(players, summaries, 6);
+				textPane_3.setText("");
+				displayInfo(players, summaries, doc, playerIndex, 6);
+
 			}
 		});
 		panel_2.add(lblAvatar5);
@@ -500,7 +531,11 @@ public class BanTracker extends JFrame {
 		lblAvatar6Info.setBounds(380, 61, 225, 25);
 		lblAvatar6.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("JLabel has been clicked!");
+
+				int playerIndex = getIndex(players, summaries, 5);
+				textPane_3.setText("");
+				displayInfo(players, summaries, doc, playerIndex, 5);
+
 			}
 		});
 		panel_2.add(lblAvatar6);
@@ -510,7 +545,11 @@ public class BanTracker extends JFrame {
 		lblAvatar7Info.setBounds(380, 135, 225, 25);
 		lblAvatar7.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("JLabel has been clicked!");
+
+				int playerIndex = getIndex(players, summaries, 4);
+				textPane_3.setText("");
+				displayInfo(players, summaries, doc, playerIndex, 4);
+
 			}
 		});
 		panel_2.add(lblAvatar7);
@@ -520,7 +559,11 @@ public class BanTracker extends JFrame {
 		lblAvatar8Info.setBounds(380, 209, 225, 25);
 		lblAvatar8.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("JLabel has been clicked!");
+
+				int playerIndex = getIndex(players, summaries, 3);
+				textPane_3.setText("");
+				displayInfo(players, summaries, doc, playerIndex, 3);
+
 			}
 		});
 		panel_2.add(lblAvatar8);
@@ -530,7 +573,11 @@ public class BanTracker extends JFrame {
 		lblAvatar9Info.setBounds(380, 283, 225, 25);
 		lblAvatar9.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("JLabel has been clicked!");
+
+				int playerIndex = getIndex(players, summaries, 2);
+				textPane_3.setText("");
+				displayInfo(players, summaries, doc, playerIndex, 2);
+
 			}
 		});
 		panel_2.add(lblAvatar9);
@@ -540,7 +587,11 @@ public class BanTracker extends JFrame {
 		lblAvatar10Info.setBounds(380, 357, 225, 25);
 		lblAvatar10.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				System.out.println("JLabel has been clicked!");
+
+				int playerIndex = getIndex(players, summaries, 1);
+				textPane_3.setText("");
+				displayInfo(players, summaries, doc, playerIndex, 1);
+
 			}
 		});
 		panel_2.add(lblAvatar10);
@@ -672,7 +723,6 @@ public class BanTracker extends JFrame {
 										FileHandler.getAllPlayers().get(i).getSteamId() + str, null);
 								doc.insertString(doc.getLength(), "\n", null);
 							}
-
 						}
 					}
 
@@ -727,5 +777,62 @@ public class BanTracker extends JFrame {
 
 		return count;
 
+	}
+
+	/**
+	 * Get the index of a User in the sorted ArrayList containing all Users.
+	 * 
+	 * @param u
+	 *            Sorted ArrayList containing all Users.
+	 * @param s
+	 *            Unsorted ArrayList containing all User summaries.
+	 * @param offset
+	 *            Integer representing an offset from the last element. To get
+	 *            the 10th element from the last, use offset of 10. Using offset
+	 *            of 1 would return the index of the last element.
+	 * @return Integer repressenting the index of a User in an ArrayList, -1 if
+	 *         no user is found.
+	 */
+	private int getIndex(ArrayList<User> u, ArrayList<PlayerSummary.Player> s, int offset) {
+		int index = s.size();
+		for (int i = 0; i < u.size(); i++) {
+			if (s.get(index - offset).getSteamID().equalsIgnoreCase(u.get(i).getSteamId())) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Display recent User information in button action listener.
+	 * 
+	 * @param u
+	 *            Sorted ArrayList containing all Users.
+	 * @param s
+	 *            Unsorted ArrayList containing all User summaries.
+	 * @param d
+	 *            Document the text will be apended to.
+	 * @param pI
+	 *            Integer index returned from getIndex().
+	 * @param sOffset
+	 *            Integer representing an offset from the last element. To get
+	 *            the 10th element from the last, use offset of 10. Using offset
+	 *            of 1 would return the index of the last element.
+	 */
+	private void displayInfo(ArrayList<User> u, ArrayList<PlayerSummary.Player> s, Document d, int pI, int sOffset) {
+		textPane_3.setText("");
+		try {
+			if (pI != -1) {
+				d.insertString(d.getLength(), "Summary for " + s.get(s.size() - sOffset).getPersonaName() + "\n\n"
+						+ "Profile: " + "steamcommunity.com/profiles/" + u.get(pI).getSteamId() + "\n" + "Date added: "
+						+ u.get(pI).getDateAdded() + "\n" + "Number of VAC bans: " + u.get(pI).getInitVACBans() + "\n"
+						+ "Days since last VAC ban: " + u.get(pI).getDaysSinceLastBan() + "\n" + "Number of Game Bans: "
+						+ u.get(pI).getNumberOfBans(), null);
+			} else {
+				d.insertString(d.getLength(), "No summary was found!", null);
+			}
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
 	}
 }

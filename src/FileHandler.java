@@ -30,12 +30,10 @@ public class FileHandler implements Serializable {
 	public static void writeToFile(String fileName, Object objToWrite) {
 
 		try {
-
 			FileOutputStream fOS = new FileOutputStream(fileName);
 			ObjectOutputStream oOS = new ObjectOutputStream(fOS);
 			oOS.writeObject(objToWrite);
 			oOS.close();
-
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -58,10 +56,9 @@ public class FileHandler implements Serializable {
 				if (fileName.equalsIgnoreCase("summaries.tmp")) {
 					trackedSummaries = (ArrayList<PlayerSummary.Player>) oIS.readObject();
 				}
-				if (fileName.equalsIgnoreCase("unsorted.tmp")) {
+				if (fileName.equalsIgnoreCase("s_unsorted.tmp")) {
 					trackedSummariesUnsorted = (ArrayList<PlayerSummary.Player>) oIS.readObject();
 				}
-				
 			} else {
 				System.out.println("Object type " + objType + " needs to be implemented!");
 			}
