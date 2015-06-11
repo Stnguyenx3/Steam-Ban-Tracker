@@ -125,5 +125,9 @@ public class FileHandler implements Serializable {
 		}
 		return APIKEY;
 	}
+	
+	public static void updateArrayList(ArrayList<User> a) {
+		tracked = a;
+	}
 
 }

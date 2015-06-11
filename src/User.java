@@ -15,9 +15,9 @@ public class User implements Serializable, Comparable<User> {
 	private int NumberOfVACBans;
 	private int DaysSinceLastBan;
 	private String EconomyBan;
+	private int NumberOfGameBans;
 
 	private String dateAdded;
-	private int initialVacBans;
 
 	public User() {
 		this.SteamId = "NULL";
@@ -26,19 +26,20 @@ public class User implements Serializable, Comparable<User> {
 		this.NumberOfVACBans = 0;
 		this.DaysSinceLastBan = 0;
 		this.EconomyBan = "none";
+		this.NumberOfGameBans = 0;
 		this.dateAdded = "yyyy/mm/dd";
-		this.initialVacBans = NumberOfVACBans;
 	}
 
-	public User(String sID, boolean cBan, boolean vBan, int numBans, int daysBan, String eBan, String date, int initVB) {
+	public User(String sID, boolean cBan, boolean vBan, int numBans, int daysBan, String eBan, int gBan, String date) {
 		this.SteamId = sID;
 		this.CommunityBanned = cBan;
 		this.VACBanned = vBan;
 		this.NumberOfVACBans = numBans;
 		this.DaysSinceLastBan = daysBan;
 		this.EconomyBan = eBan;
+		this.NumberOfGameBans = gBan;
 		this.dateAdded = date;
-		this.initialVacBans = initVB;
+
 
 	}
 
@@ -89,6 +90,14 @@ public class User implements Serializable, Comparable<User> {
 	public String getEconomyBanned() {
 		return EconomyBan;
 	}
+	
+	public void setNumberOfGameBans(int num) {
+		this.NumberOfGameBans = num;
+	}
+	
+	public int getNumberOfGameBans() {
+		return NumberOfGameBans;
+	}
 
 	public String getDateAdded() {
 		return dateAdded;
@@ -96,14 +105,6 @@ public class User implements Serializable, Comparable<User> {
 
 	public void setDateAdded(String newDate) {
 		this.dateAdded = newDate;
-	}
-
-	public int getInitVACBans() {
-		return initialVacBans;
-	}
-
-	public void setInitVACBans(int numBans) {
-		this.initialVacBans = numBans;
 	}
 
 	@Override

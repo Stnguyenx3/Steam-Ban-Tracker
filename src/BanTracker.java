@@ -251,7 +251,7 @@ public class BanTracker extends JFrame {
 
 							String jsonData = SteamWebAPI.getInfo(cID);
 
-							uMInstance.addPlayer(jsonData, cID, 1, uInput);
+							uMInstance.addPlayer(jsonData, cID, 1);
 
 							if (uMInstance.getLastAdded().size() == 1) {
 
@@ -273,7 +273,7 @@ public class BanTracker extends JFrame {
 											.equalsIgnoreCase(summaries.get(j).getSteamID())) {
 
 										textPane_1.setText(summaries.get(j).getPersonaName()
-												+ " is already being tracked!");
+												+ " is already being tracked and will be updated!");
 
 									}
 								}
@@ -330,7 +330,7 @@ public class BanTracker extends JFrame {
 						jsonData = SteamWebAPI.getInfo(comIDs);
 
 						// Add user
-						uMInstance.addPlayer(jsonData, comIDs, comIDCounter, uInput);
+						uMInstance.addPlayer(jsonData, comIDs, comIDCounter);
 
 						// Reset comIDs for future use.
 						for (int i = 0; i < comIDs.length; i++) {
@@ -367,8 +367,8 @@ public class BanTracker extends JFrame {
 						if (uMInstance.getCurrentlyTracked().size() > 0) {
 
 							try {
-								doc.insertString(doc.getLength(), "The following users are already being tracked:\n",
-										null);
+								doc.insertString(doc.getLength(),
+										"The following users are already being tracked and will be updated:\n", null);
 							} catch (BadLocationException e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
@@ -455,13 +455,13 @@ public class BanTracker extends JFrame {
 
 		Document doc = textPane_3.getDocument();
 		ArrayList<PlayerSummary.Player> summaries = FileHandler.getAllSummariesUnsorted();
-		ArrayList<User> players = FileHandler.getAllPlayers();
+		// ArrayList<User> players = FileHandler.getAllPlayers();
 
 		lblAvatar1.setBounds(10, 61, 64, 64);
 		lblAvatar1Info.setBounds(80, 61, 225, 25);
 		lblAvatar1.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-
+				ArrayList<User> players = FileHandler.getAllPlayers();
 				int playerIndex = getIndex(players, summaries, 10);
 				textPane_3.setText("");
 				displayInfo(players, summaries, doc, playerIndex, 10);
@@ -475,7 +475,7 @@ public class BanTracker extends JFrame {
 		lblAvatar2Info.setBounds(80, 135, 225, 25);
 		lblAvatar2.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-
+				ArrayList<User> players = FileHandler.getAllPlayers();
 				int playerIndex = getIndex(players, summaries, 9);
 				textPane_3.setText("");
 				displayInfo(players, summaries, doc, playerIndex, 9);
@@ -489,7 +489,7 @@ public class BanTracker extends JFrame {
 		lblAvatar3Info.setBounds(80, 209, 225, 25);
 		lblAvatar3.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-
+				ArrayList<User> players = FileHandler.getAllPlayers();
 				int playerIndex = getIndex(players, summaries, 8);
 				textPane_3.setText("");
 				displayInfo(players, summaries, doc, playerIndex, 8);
@@ -503,7 +503,7 @@ public class BanTracker extends JFrame {
 		lblAvatar4Info.setBounds(80, 283, 225, 25);
 		lblAvatar4.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-
+				ArrayList<User> players = FileHandler.getAllPlayers();
 				int playerIndex = getIndex(players, summaries, 7);
 				textPane_3.setText("");
 				displayInfo(players, summaries, doc, playerIndex, 7);
@@ -517,7 +517,7 @@ public class BanTracker extends JFrame {
 		lblAvatar5Info.setBounds(80, 357, 225, 25);
 		lblAvatar5.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-
+				ArrayList<User> players = FileHandler.getAllPlayers();
 				int playerIndex = getIndex(players, summaries, 6);
 				textPane_3.setText("");
 				displayInfo(players, summaries, doc, playerIndex, 6);
@@ -531,7 +531,7 @@ public class BanTracker extends JFrame {
 		lblAvatar6Info.setBounds(380, 61, 225, 25);
 		lblAvatar6.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-
+				ArrayList<User> players = FileHandler.getAllPlayers();
 				int playerIndex = getIndex(players, summaries, 5);
 				textPane_3.setText("");
 				displayInfo(players, summaries, doc, playerIndex, 5);
@@ -545,7 +545,7 @@ public class BanTracker extends JFrame {
 		lblAvatar7Info.setBounds(380, 135, 225, 25);
 		lblAvatar7.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-
+				ArrayList<User> players = FileHandler.getAllPlayers();
 				int playerIndex = getIndex(players, summaries, 4);
 				textPane_3.setText("");
 				displayInfo(players, summaries, doc, playerIndex, 4);
@@ -559,7 +559,7 @@ public class BanTracker extends JFrame {
 		lblAvatar8Info.setBounds(380, 209, 225, 25);
 		lblAvatar8.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-
+				ArrayList<User> players = FileHandler.getAllPlayers();
 				int playerIndex = getIndex(players, summaries, 3);
 				textPane_3.setText("");
 				displayInfo(players, summaries, doc, playerIndex, 3);
@@ -573,7 +573,7 @@ public class BanTracker extends JFrame {
 		lblAvatar9Info.setBounds(380, 283, 225, 25);
 		lblAvatar9.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-
+				ArrayList<User> players = FileHandler.getAllPlayers();
 				int playerIndex = getIndex(players, summaries, 2);
 				textPane_3.setText("");
 				displayInfo(players, summaries, doc, playerIndex, 2);
@@ -587,7 +587,7 @@ public class BanTracker extends JFrame {
 		lblAvatar10Info.setBounds(380, 357, 225, 25);
 		lblAvatar10.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-
+				ArrayList<User> players = FileHandler.getAllPlayers();
 				int playerIndex = getIndex(players, summaries, 1);
 				textPane_3.setText("");
 				displayInfo(players, summaries, doc, playerIndex, 1);
@@ -699,39 +699,43 @@ public class BanTracker extends JFrame {
 		tabbedPane.addTab("Check Bans", null, panel_4, null);
 		panel_4.setLayout(null);
 
+		UserManager uM = UserManager.getInstance();
+
 		JButton button = new JButton("Check Bans");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
+				uM.updateUsers();
+
+				ArrayList<User> oldUsers = uM.getTracked();
+				ArrayList<User> newUsers = uM.getUpdatedUsers();
+
+				Document doc = textPane_2.getDocument();
+
 				try {
 
-					Document doc = textPane_2.getDocument();
+					for (int i = 0; i < oldUsers.size(); i++) {
 
-					// Clear textpane for new information to be shown.
-					textPane_2.setText("");
-
-					int numBanned = 0;
-
-					String str = " has been VAC banned!";
-
-					for (int i = 0; i < FileHandler.getAllPlayers().size(); i++) {
-						if (FileHandler.getAllPlayers().get(i).getVacBan() == true) {
-							if (UserManager.getInstance().bannedSinceAdded(
-									FileHandler.getAllPlayers().get(i).getSteamId())) {
-								numBanned++;
-								doc.insertString(doc.getLength(),
-										FileHandler.getAllPlayers().get(i).getSteamId() + str, null);
-								doc.insertString(doc.getLength(), "\n", null);
+						if (oldUsers.get(i).equals(newUsers.get(i))) {
+							if (newUsers.get(i).getNumberOfBans() > oldUsers.get(i).getNumberOfBans()) {
+								doc.insertString(doc.getLength(), newUsers.get(i).getSteamId()
+										+ "has been VAC banned!\n", null);
+							} else if (newUsers.get(i).getNumberOfGameBans() > oldUsers.get(i).getNumberOfGameBans()) {
+								doc.insertString(doc.getLength(), newUsers.get(i).getSteamId()
+										+ "has been Overwatch banned!\n", null);
+							} else {
+								textPane_2.setText("No bans were found.");
 							}
+
 						}
+
 					}
 
-					if (numBanned == 0) {
-						textPane_2.setText("No users have been VAC banned!");
-					}
+					// Update Users
+					FileHandler.updateArrayList(newUsers);
 
-				} catch (BadLocationException ex) {
-					ex.printStackTrace();
+				} catch (BadLocationException e1) {
+					e1.printStackTrace();
 				}
 
 			}
@@ -825,9 +829,9 @@ public class BanTracker extends JFrame {
 			if (pI != -1) {
 				d.insertString(d.getLength(), "Summary for " + s.get(s.size() - sOffset).getPersonaName() + "\n\n"
 						+ "Profile: " + "steamcommunity.com/profiles/" + u.get(pI).getSteamId() + "\n" + "Date added: "
-						+ u.get(pI).getDateAdded() + "\n" + "Number of VAC bans: " + u.get(pI).getInitVACBans() + "\n"
-						+ "Days since last VAC ban: " + u.get(pI).getDaysSinceLastBan() + "\n" + "Number of Game Bans: "
-						+ u.get(pI).getNumberOfBans(), null);
+						+ u.get(pI).getDateAdded() + "\n" + "Number of VAC bans: " + u.get(pI).getNumberOfBans() + "\n"
+						+ "Days since last VAC ban: " + u.get(pI).getDaysSinceLastBan() + "\n"
+						+ "Number of Game Bans: " + u.get(pI).getNumberOfGameBans(), null);
 			} else {
 				d.insertString(d.getLength(), "No summary was found!", null);
 			}

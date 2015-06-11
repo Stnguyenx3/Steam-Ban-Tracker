@@ -35,9 +35,12 @@ public class UserManager {
 	// displaying information to the user in .
 	private static ArrayList<User> lastAdded = new ArrayList<User>();
 
-	// For the current request, an ArrayList containing Users that are already
+	// For the CURRENT request, an ArrayList containing Users that are already
 	// being tracked.
 	private static ArrayList<User> alreadyTracked = new ArrayList<User>();
+
+	// ArrayList containing updated user information used to check for bans.
+	private static ArrayList<User> updatedUsers = new ArrayList<User>();
 
 	/**
 	 * Add player(s) to be tracked.
@@ -49,7 +52,7 @@ public class UserManager {
 	 * @param size
 	 *            The number of players currently in the Array.
 	 */
-	public void addPlayer(String jData, String[] ids, int size, String[] rawData) {
+	public void addPlayer(String jData, String[] ids, int size) {
 
 		// Deserialize JSON data into SteamUsers Object.
 		SteamUsers newUsr = gson.fromJson(jData, SteamUsers.class);
@@ -58,7 +61,7 @@ public class UserManager {
 		if (!newUsr.isEmpty()) {
 
 			// Initialize Date
-			DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy");
+			DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy 'at' HH:mm:ss z");
 			Date date = new Date();
 			String dateAdded = dateFormat.format(date);
 
@@ -67,7 +70,7 @@ public class UserManager {
 				User currentUser = newUsr.getPlayer(i);
 				User user = new User(currentUser.getSteamId(), currentUser.getCommunityBanned(),
 						currentUser.getVacBan(), currentUser.getNumberOfBans(), currentUser.getDaysSinceLastBan(),
-						currentUser.getEconomyBanned(), dateAdded, currentUser.getNumberOfBans());
+						currentUser.getEconomyBanned(), currentUser.getNumberOfGameBans(), dateAdded);
 
 				// Check if user is already being tracked
 				if (!trackedPlayers.contains(user)) {
@@ -75,19 +78,21 @@ public class UserManager {
 					lastAdded.add(user);
 
 				} else {
-					// System.out.println(user.getSteamId() +
-					// " is already being tracked!");
 					alreadyTracked.add(user);
+					// Update user information
+					updatedUsers.add(user);
+					// System.out.println(user.getSteamId() +
+					// " has been updated!");
 				}
-
 			}
 
 			if (lastAdded.size() > 0) {
 				// Get Player Summaries and add to ArrayList.
 				parsePlayerSummary(lastAdded);
 			}
-			
-			// Sort trackedPlayers and trackedSummaries so the player and their summaries match.
+
+			// Sort trackedPlayers and trackedSummaries so the player and their
+			// summaries match.
 			Collections.sort(trackedPlayers);
 			Collections.sort(trackedSummaries);
 
@@ -95,6 +100,14 @@ public class UserManager {
 			System.out.println("User(s) does not exist!");
 		}
 
+	}
+	
+	/**
+	 * 
+	 * @return ArrayList of User objects representing all users being tracked.
+	 */
+	public ArrayList<User> getTracked() {
+		return trackedPlayers;
 	}
 
 	/**
@@ -154,7 +167,7 @@ public class UserManager {
 				PlayerSummary.Player playerToAdd = playerSummary.response.getPlayer(i);
 
 				trackedSummaries.add(playerToAdd);
-				
+
 				FileHandler.getAllSummariesUnsorted().add(playerToAdd);
 
 			}
@@ -181,8 +194,7 @@ public class UserManager {
 
 				found = true;
 
-				if (FileHandler.getAllPlayers().get(i).getNumberOfBans() > FileHandler.getAllPlayers().get(i)
-						.getInitVACBans()) {
+				if (true) {
 					System.out.println(FileHandler.getAllPlayers().get(i).getSteamId() + " ("
 							+ FileHandler.getAllSummaries().get(i).getPersonaName() + ") has been VAC banned!");
 					return true;
@@ -243,6 +255,32 @@ public class UserManager {
 	 */
 	public void clearCurrentlyTracked() {
 		alreadyTracked.clear();
+	}
+
+	public void updateUsers() {
+
+		ArrayList<User> old = FileHandler.getAllPlayers();
+		String[] ids = new String[old.size()];
+		
+		for (int i = 0; i < old.size(); i++) {
+			ids[i] = old.get(i).getSteamId();
+		}
+
+		String jsonData = SteamWebAPI.getInfo(ids);
+
+		// Clear updatedUsers for new request.
+		clearUpdatedUsers();
+
+		addPlayer(jsonData, ids, ids.length);
+
+	}
+
+	public ArrayList<User> getUpdatedUsers() {
+		return updatedUsers;
+	}
+
+	public void clearUpdatedUsers() {
+		updatedUsers.clear();
 	}
 
 }
