@@ -18,6 +18,7 @@ public class User implements Serializable, Comparable<User> {
 	private int NumberOfGameBans;
 
 	private String dateAdded;
+	private String dateUpdated;
 
 	public User() {
 		this.SteamId = "NULL";
@@ -105,6 +106,19 @@ public class User implements Serializable, Comparable<User> {
 
 	public void setDateAdded(String newDate) {
 		this.dateAdded = newDate;
+	}
+	
+	public String getDateUpdated() {
+		return dateUpdated;
+	}
+	
+	public void setDateUpdated(String date) {
+		dateUpdated = date;
+	}
+	
+	public static User updateUser(User u, String date) {
+		u.dateUpdated = date;
+		return u;
 	}
 
 	@Override

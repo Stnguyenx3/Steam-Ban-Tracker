@@ -68,9 +68,16 @@ public class UserManager {
 			for (int i = 0; i < newUsr.getSize(); i++) {
 
 				User currentUser = newUsr.getPlayer(i);
-				User user = new User(currentUser.getSteamId(), currentUser.getCommunityBanned(),
-						currentUser.getVacBan(), currentUser.getNumberOfBans(), currentUser.getDaysSinceLastBan(),
-						currentUser.getEconomyBanned(), currentUser.getNumberOfGameBans(), dateAdded);
+				User user = null;
+
+				if (!trackedPlayers.contains(currentUser)) {
+					user = new User(currentUser.getSteamId(), currentUser.getCommunityBanned(),
+							currentUser.getVacBan(), currentUser.getNumberOfBans(), currentUser.getDaysSinceLastBan(),
+							currentUser.getEconomyBanned(), currentUser.getNumberOfGameBans(), dateAdded);
+				} else {
+					int index = trackedPlayers.indexOf(currentUser);
+					user = User.updateUser(trackedPlayers.get(index), dateAdded);
+				}
 
 				// Check if user is already being tracked
 				if (!trackedPlayers.contains(user)) {
@@ -91,17 +98,19 @@ public class UserManager {
 				parsePlayerSummary(lastAdded);
 			}
 
-			// Sort trackedPlayers and trackedSummaries so the player and their
+			// Sort trackedPlayers, trackedSummaries, and updatedUsers so the
+			// player and their
 			// summaries match.
 			Collections.sort(trackedPlayers);
 			Collections.sort(trackedSummaries);
+			Collections.sort(updatedUsers);
 
 		} else {
 			System.out.println("User(s) does not exist!");
 		}
 
 	}
-	
+
 	/**
 	 * 
 	 * @return ArrayList of User objects representing all users being tracked.
@@ -261,7 +270,7 @@ public class UserManager {
 
 		ArrayList<User> old = FileHandler.getAllPlayers();
 		String[] ids = new String[old.size()];
-		
+
 		for (int i = 0; i < old.size(); i++) {
 			ids[i] = old.get(i).getSteamId();
 		}
