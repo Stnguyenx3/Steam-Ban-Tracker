@@ -41,6 +41,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import javax.swing.JTable;
 
 public class BanTracker extends JFrame {
 
@@ -78,6 +79,8 @@ public class BanTracker extends JFrame {
 	JLabel lblAvatar9Info = new JLabel();
 	JLabel lblAvatar10 = new JLabel();
 	JLabel lblAvatar10Info = new JLabel();
+
+	private JTable table;
 
 	/**
 	 * Launch the application.
@@ -151,14 +154,14 @@ public class BanTracker extends JFrame {
 	 */
 	public BanTracker() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 640, 800);
+		setBounds(100, 100, 800, 800);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 0, 640, 800);
+		tabbedPane.setBounds(0, 0, 800, 800);
 		tabbedPane.setFocusable(false);
 		contentPane.add(tabbedPane);
 
@@ -436,7 +439,7 @@ public class BanTracker extends JFrame {
 		scrollPane_1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
 		panel_2 = new JPanel();
-		tabbedPane.addTab("Recently Added Players", null, panel_2, null);
+		tabbedPane.addTab("Recently Added", null, panel_2, null);
 		panel_2.setLayout(null);
 
 		JLabel lblInfo1 = new JLabel("Refreshing may take a while!");
@@ -694,6 +697,16 @@ public class BanTracker extends JFrame {
 		panel_3 = new JPanel();
 		tabbedPane.addTab("Browse Players", null, panel_3, null);
 		panel_3.setLayout(null);
+		table = new JTable(new PlayerTableModel());
+		table.getTableHeader().setReorderingAllowed(false);
+		JScrollPane tableScrollPane = new JScrollPane(table);
+		tableScrollPane.setBounds(10, 11, 780, 722);
+		tableScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		panel_3.add(tableScrollPane);
+
+		JPanel panelGames = new JPanel();
+		tabbedPane.addTab("Games", null, panelGames, null);
+		panelGames.setLayout(null);
 
 		panel_4 = new JPanel();
 		tabbedPane.addTab("Check Bans", null, panel_4, null);
