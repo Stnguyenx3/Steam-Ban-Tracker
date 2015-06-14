@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -33,19 +32,23 @@ public class PlayerTableModel extends AbstractTableModel {
 
 		switch (columnIndex) {
 		case 0:
-			return (rowIndex+1) + ")";
+			if (user.getSteamId().equalsIgnoreCase(summaries.get(rowIndex).getSteamID())) {
+				return summaries.get(rowIndex).getPersonaName();
+			} else {
+				return null;
+			}
 		case 1:
-			return user.getSteamId();
-		case 2:
 			return user.getDateAdded();
-		case 3:
+		case 2:
 			return user.getDateUpdated();
-		case 4:
+		case 3:
 			return user.getNumberOfBans();
-		case 5:
+		case 4:
 			return user.getNumberOfGameBans();
-		case 6:
+		case 5:
 			return user.getDaysSinceLastBan();
+		case 6:
+			return user.getSteamId();
 		}
 
 		return null;
@@ -54,20 +57,20 @@ public class PlayerTableModel extends AbstractTableModel {
 	public String getColumnName(int columnIndex) {
 
 		switch (columnIndex) {
-		case 0: 
-			return "#";
-		case 1:
+		case 0:
 			return "ID";
-		case 2:
+		case 1:
 			return "Date added";
-		case 3:
+		case 2:
 			return "Date updated";
-		case 4:
+		case 3:
 			return "VAC bans";
-		case 5:
+		case 4:
 			return "Game bans";
-		case 6:
+		case 5:
 			return "Last ban (days)";
+		case 6:
+			return "64-Bit SteamID";
 		}
 		return null;
 

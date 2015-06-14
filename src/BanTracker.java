@@ -33,6 +33,7 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.xml.parsers.ParserConfigurationException;
@@ -41,6 +42,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
 import javax.swing.JTable;
 
 public class BanTracker extends JFrame {
@@ -81,6 +83,8 @@ public class BanTracker extends JFrame {
 	JLabel lblAvatar10Info = new JLabel();
 
 	private JTable table;
+
+	private JLabel lblBrowsePlayers;
 
 	/**
 	 * Launch the application.
@@ -176,7 +180,7 @@ public class BanTracker extends JFrame {
 		lblDesc = new JLabel();
 		lblDesc.setVerticalAlignment(SwingConstants.TOP);
 		lblDesc.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
-		lblDesc.setBounds(30, 11, 559, 450);
+		lblDesc.setBounds(30, 11, 740, 450);
 		lblDesc.setText("<html>This program allows you to track CSGO players for Overwatch and VAC bans. "
 				+ "You may use this program to keep track of players from your competitive matchmaking games.<br><br>"
 				+ "<u>Instructions:</u><br><br> To add multiple players at once<br>1) Once all players have connected, "
@@ -191,14 +195,14 @@ public class BanTracker extends JFrame {
 
 		textPane = new JTextPane();
 		JScrollPane scrollPane = new JScrollPane(textPane);
-		scrollPane.setBounds(10, 40, 599, 345);
+		scrollPane.setBounds(10, 40, 770, 345);
 		panel_1.add(scrollPane);
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
 		JLabel lblPasteCsgoConsole_1 = new JLabel("Paste CS:GO console output or Steam profile URL here");
 		lblPasteCsgoConsole_1.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPasteCsgoConsole_1.setFont(new Font("Comic Sans MS", Font.PLAIN, 12));
-		lblPasteCsgoConsole_1.setBounds(10, 11, 599, 18);
+		lblPasteCsgoConsole_1.setBounds(10, 11, 770, 18);
 		panel_1.add(lblPasteCsgoConsole_1);
 
 		JButton button_1 = new JButton("Process Information");
@@ -426,15 +430,14 @@ public class BanTracker extends JFrame {
 			}
 
 		});
-		button_1.setBounds(10, 396, 599, 50);
+		button_1.setBounds(10, 396, 770, 50);
 		button_1.setFocusPainted(false);
 		panel_1.add(button_1);
 
 		textPane_1 = new JTextPane();
 		textPane_1.setEditable(false);
-		textPane_1.setBounds(10, 457, 599, 265);
 		scrollPane_1 = new JScrollPane(textPane_1);
-		scrollPane_1.setBounds(10, 457, 599, 265);
+		scrollPane_1.setBounds(10, 457, 770, 265);
 		panel_1.add(scrollPane_1);
 		scrollPane_1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
@@ -445,7 +448,7 @@ public class BanTracker extends JFrame {
 		JLabel lblInfo1 = new JLabel("Refreshing may take a while!");
 		lblInfo1.setVerticalAlignment(SwingConstants.TOP);
 		lblInfo1.setHorizontalAlignment(SwingConstants.CENTER);
-		lblInfo1.setBounds(10, 63, 603, 367);
+		lblInfo1.setBounds(10, 63, 770, 367);
 		lblInfo1.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
 		panel_2.add(lblInfo1);
 
@@ -453,7 +456,7 @@ public class BanTracker extends JFrame {
 		textPane_3.setText("Click on a profile to get more information!");
 		textPane_3.setEditable(false);
 		textPane_3.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		textPane_3.setBounds(10, 441, 615, 291);
+		textPane_3.setBounds(10, 441, 770, 291);
 		panel_2.add(textPane_3);
 
 		Document doc = textPane_3.getDocument();
@@ -691,18 +694,70 @@ public class BanTracker extends JFrame {
 
 			}
 		});
-		btnRefresh.setBounds(10, 11, 603, 40);
+		btnRefresh.setBounds(10, 11, 770, 40);
 		panel_2.add(btnRefresh);
 
 		panel_3 = new JPanel();
 		tabbedPane.addTab("Browse Players", null, panel_3, null);
 		panel_3.setLayout(null);
+		
 		table = new JTable(new PlayerTableModel());
 		table.getTableHeader().setReorderingAllowed(false);
+
+		// Center cell values.
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		table.getColumn("ID").setCellRenderer(renderer);
+		table.getColumn("Date added").setCellRenderer(renderer);
+		table.getColumn("Date updated").setCellRenderer(renderer);
+		table.getColumn("VAC bans").setCellRenderer(renderer);
+		table.getColumn("Game bans").setCellRenderer(renderer);
+		table.getColumn("Last ban (days)").setCellRenderer(renderer);
+		table.getColumn("64-Bit SteamID").setCellRenderer(renderer);
+		
+		// Center table header.
+		((DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer())
+				.setHorizontalAlignment(SwingConstants.CENTER);
+
+		// Set the width of each column.
+		table.getColumn("ID").setMinWidth(150);
+		table.getColumn("ID").setMaxWidth(150);
+		table.getColumn("Date added").setMinWidth(75);
+		table.getColumn("Date added").setMaxWidth(75);
+		table.getColumn("Date updated").setMinWidth(85);
+		table.getColumn("Date updated").setMaxWidth(85);
+		table.getColumn("VAC bans").setMinWidth(65);
+		table.getColumn("VAC bans").setMaxWidth(65);
+		table.getColumn("Game bans").setMinWidth(75);
+		table.getColumn("Game bans").setMaxWidth(75);
+		table.getColumn("Last ban (days)").setMinWidth(100);
+		table.getColumn("Last ban (days)").setMaxWidth(100);
+
+		table.setRowHeight(30);
+
 		JScrollPane tableScrollPane = new JScrollPane(table);
-		tableScrollPane.setBounds(10, 11, 780, 722);
+		tableScrollPane.setBounds(10, 80, 780, 525);
 		tableScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		panel_3.add(tableScrollPane);
+
+		JButton btnRefreshAllPlayers = new JButton("Refresh");
+		btnRefreshAllPlayers.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				PlayerTableModel model = (PlayerTableModel) table.getModel();
+				model.fireTableDataChanged();
+				lblBrowsePlayers.setText("There are currently " + FileHandler.getAllPlayers().size()
+						+ " players being tracked.");
+			}
+		});
+		btnRefreshAllPlayers.setBounds(10, 11, 99, 58);
+		panel_3.add(btnRefreshAllPlayers);
+
+		lblBrowsePlayers = new JLabel("");
+		lblBrowsePlayers.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+		lblBrowsePlayers.setBounds(119, 26, 655, 25);
+		panel_3.add(lblBrowsePlayers);
+		lblBrowsePlayers.setText("There are currently " + FileHandler.getAllPlayers().size()
+				+ " players being tracked.");
 
 		JPanel panelGames = new JPanel();
 		tabbedPane.addTab("Games", null, panelGames, null);

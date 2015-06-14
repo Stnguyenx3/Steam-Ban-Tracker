@@ -61,7 +61,8 @@ public class UserManager {
 		if (!newUsr.isEmpty()) {
 
 			// Initialize Date
-			DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy 'at' HH:mm:ss z");
+			//DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy 'at' HH:mm:ss z");
+			DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy");
 			Date date = new Date();
 			String dateAdded = dateFormat.format(date);
 
