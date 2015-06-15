@@ -23,6 +23,8 @@ public class FileHandler implements Serializable {
 
 	private static ArrayList<PlayerSummary.Player> trackedSummariesUnsorted = new ArrayList<PlayerSummary.Player>();
 
+	private static ArrayList<String[]> games = new ArrayList<String[]>();
+
 	private static String savedString = "";
 
 	private static String APIKEY = "";
@@ -59,6 +61,8 @@ public class FileHandler implements Serializable {
 				if (fileName.equalsIgnoreCase("s_unsorted.tmp")) {
 					trackedSummariesUnsorted = (ArrayList<PlayerSummary.Player>) oIS.readObject();
 				}
+			} else if (objType.equalsIgnoreCase("ArrayList<String[]>")) {
+				games = (ArrayList<String[]>) oIS.readObject();
 			} else {
 				System.out.println("Object type " + objType + " needs to be implemented!");
 			}
@@ -94,6 +98,10 @@ public class FileHandler implements Serializable {
 		return trackedSummariesUnsorted;
 	}
 
+	public static ArrayList<String[]> getGames() {
+		return games;
+	}
+
 	public static String getSavedString() {
 		return savedString;
 	}
@@ -125,7 +133,7 @@ public class FileHandler implements Serializable {
 		}
 		return APIKEY;
 	}
-	
+
 	public static void updateArrayList(ArrayList<User> a) {
 		tracked = a;
 	}

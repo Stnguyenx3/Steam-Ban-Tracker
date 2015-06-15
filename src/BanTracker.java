@@ -18,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -129,6 +130,7 @@ public class BanTracker extends JFrame {
 							FileHandler.writeToFile("users.tmp", FileHandler.getAllPlayers());
 							FileHandler.writeToFile("summaries.tmp", FileHandler.getAllSummaries());
 							FileHandler.writeToFile("s_unsorted.tmp", FileHandler.getAllSummariesUnsorted());
+							FileHandler.writeToFile("games.tmp", FileHandler.getGames());
 							System.out.println("Finished saving...");
 							// System.exit(0);
 							// }
@@ -150,6 +152,7 @@ public class BanTracker extends JFrame {
 		FileHandler.readFromFile("users.tmp", "ArrayList<User>");
 		FileHandler.readFromFile("s_unsorted.tmp", "ArrayList<PlayerSummary.Player>");
 		FileHandler.readFromFile("summaries.tmp", "ArrayList<PlayerSummary.Player>");
+		FileHandler.readFromFile("games.tmp", "ArrayList<String[]>");
 
 	}
 
@@ -211,7 +214,7 @@ public class BanTracker extends JFrame {
 
 				String userInput = textPane.getText() + " ";
 				String[] uInput = null;
-				String[] comIDs = new String[50];
+				String[] comIDs = new String[100];
 				int comIDCounter = 0;
 				ArrayList<PlayerSummary.Player> summaries = FileHandler.getAllSummaries();
 
@@ -318,57 +321,12 @@ public class BanTracker extends JFrame {
 
 					if (uInput != null && uInput.length > 0) {
 
-						for (int i = 1; i < uInput.length; i++) {
-
-							if (!SteamDataParser.getSteamID(uInput[i]).equals("Invalid_Steam_ID")) {
-
-								comIDs[comIDCounter] = SteamDataParser.convertToCommunityID(SteamDataParser
-										.getSteamID(uInput[i]));
-								comIDCounter++;
-
-								if (comIDCounter >= 50) {
-									textPane_1.setText("Only 50 players may be added at a time!");
-								}
-
-							}
-
-						}
-
-						jsonData = SteamWebAPI.getInfo(comIDs);
-
-						// Add user
-						uMInstance.addPlayer(jsonData, comIDs, comIDCounter);
-
-						// Reset comIDs for future use.
-						for (int i = 0; i < comIDs.length; i++) {
-							comIDs[i] = null;
-						}
-
-						ArrayList<User> lA = uMInstance.getLastAdded();
-
-						if (lA.size() > 0) {
-							textPane_1.setText("The following players have been added:\n");
-
-							for (int i = 0; i < lA.size(); i++) {
-								try {
-
-									for (int j = 0; j < summaries.size(); j++) {
-										if (lA.get(i).getSteamId().equalsIgnoreCase(summaries.get(j).getSteamID())) {
-											doc.insertString(doc.getLength(), i + 1 + ") "
-													+ summaries.get(j).getPersonaName() + " (ID="
-													+ summaries.get(j).getSteamID() + ")" + "\n", null);
-										}
-									}
-
-								} catch (BadLocationException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-							}
-
-							// Reset lastAdded for future use.
-							uMInstance.clearLastAdded();
-
+						if (uInput.length <= 10) {
+							processPlayer(uInput, comIDs, jsonData, comIDCounter, UserManager.getInstance(),
+									textPane_1.getStyledDocument());
+						} else {
+							processPlayerWithGames(uInput, comIDs, jsonData, comIDCounter, UserManager.getInstance(),
+									textPane_1.getStyledDocument());
 						}
 
 						if (uMInstance.getCurrentlyTracked().size() > 0) {
@@ -700,7 +658,7 @@ public class BanTracker extends JFrame {
 		panel_3 = new JPanel();
 		tabbedPane.addTab("Browse Players", null, panel_3, null);
 		panel_3.setLayout(null);
-		
+
 		table = new JTable(new PlayerTableModel());
 		table.getTableHeader().setReorderingAllowed(false);
 
@@ -714,7 +672,7 @@ public class BanTracker extends JFrame {
 		table.getColumn("Game bans").setCellRenderer(renderer);
 		table.getColumn("Last ban (days)").setCellRenderer(renderer);
 		table.getColumn("64-Bit SteamID").setCellRenderer(renderer);
-		
+
 		// Center table header.
 		((DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer())
 				.setHorizontalAlignment(SwingConstants.CENTER);
@@ -762,6 +720,58 @@ public class BanTracker extends JFrame {
 		JPanel panelGames = new JPanel();
 		tabbedPane.addTab("Games", null, panelGames, null);
 		panelGames.setLayout(null);
+
+		JTextPane textPane_4 = new JTextPane();
+		textPane_4.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		textPane_4.setEditable(false);
+		JScrollPane gameScrollPane = new JScrollPane(textPane_4);
+		gameScrollPane.setBounds(10, 84, 775, 649);
+		gameScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		panelGames.add(gameScrollPane);
+
+		Document gameDoc = textPane_4.getDocument();
+
+		JButton btnRefreshGame = new JButton("Refresh");
+		btnRefreshGame.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
+				textPane_4.setText("");
+
+				ArrayList<String[]> allGames = FileHandler.getGames();
+
+				System.out.println(allGames.size());
+				for (int i = 0; i < allGames.size(); i++) {
+
+					try {
+
+						gameDoc.insertString(gameDoc.getLength(), "Game " + (i + 1) + "\n", null);
+
+						for (int j = 0; j < allGames.get(i).length; j++) {
+
+							String id = SteamDataParser.getSteamID(allGames.get(i)[j]);
+							PlayerSummary.Player player = findPlayerWithID(id);
+							gameDoc.insertString(gameDoc.getLength(),
+									player.getPersonaName() + "  ->  " + player.getProfileURL() + "\n", null);
+						}
+
+						gameDoc.insertString(gameDoc.getLength(), "\n", null);
+
+					} catch (BadLocationException e) {
+						e.printStackTrace();
+					}
+
+				}
+
+			}
+		});
+		btnRefreshGame.setBounds(10, 11, 99, 58);
+		panelGames.add(btnRefreshGame);
+
+		JLabel lblNewLabel = new JLabel(
+				"For the best results, add players using the complete console output from one a game!");
+		lblNewLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+		lblNewLabel.setBounds(119, 26, 655, 25);
+		panelGames.add(lblNewLabel);
 
 		panel_4 = new JPanel();
 		tabbedPane.addTab("Check Bans", null, panel_4, null);
@@ -818,7 +828,7 @@ public class BanTracker extends JFrame {
 		textPane_2.setBounds(65, 485, 314, 107);
 		textPane_2.setEditable(false);
 		JScrollPane scrollPane_2 = new JScrollPane(textPane_2);
-		scrollPane_2.setBounds(10, 45, 599, 400);
+		scrollPane_2.setBounds(10, 45, 770, 400);
 		panel_4.add(scrollPane_2);
 		scrollPane_2.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
@@ -909,5 +919,165 @@ public class BanTracker extends JFrame {
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Processes the user input and adds players to the program.
+	 * 
+	 * @param uI
+	 *            Array of Strings containing user input after using split().
+	 * @param cIDs
+	 *            Array of Strings that will hold Community ID's
+	 * @param jD
+	 *            String containing JSON data to be parsed.
+	 * @param cIDCounter
+	 *            Integer used to check if number of Community ID's exceed the
+	 *            allowed amount.
+	 * @param instance
+	 *            An instance of UserManager.
+	 * @param d
+	 *            Document that information will be printed to.
+	 */
+	private void processPlayer(String[] uI, String[] cIDs, String jD, int cIDCounter, UserManager instance, Document d) {
+		for (int i = 1; i < uI.length; i++) {
+
+			if (!SteamDataParser.getSteamID(uI[i]).equals("Invalid_Steam_ID")) {
+
+				cIDs[cIDCounter] = SteamDataParser.convertToCommunityID(SteamDataParser.getSteamID(uI[i]));
+				cIDCounter++;
+
+				if (cIDCounter >= 100) {
+					textPane_1.setText("Only 100 players may be added at a time!");
+				}
+
+			}
+
+		}
+
+		jD = SteamWebAPI.getInfo(cIDs);
+
+		// Add user
+		instance.addPlayer(jD, cIDs, cIDCounter);
+
+		// Reset comIDs for future use.
+		for (int i = 0; i < cIDs.length; i++) {
+			cIDs[i] = null;
+		}
+
+		ArrayList<User> lA = instance.getLastAdded();
+
+		if (lA.size() > 0) {
+			textPane_1.setText("The following players have been added:\n");
+
+			for (int i = 0; i < lA.size(); i++) {
+				try {
+
+					for (int j = 0; j < FileHandler.getAllSummaries().size(); j++) {
+						if (lA.get(i).getSteamId().equalsIgnoreCase(FileHandler.getAllSummaries().get(j).getSteamID())) {
+							d.insertString(d.getLength(), i + 1 + ") "
+									+ FileHandler.getAllSummaries().get(j).getPersonaName() + " (ID="
+									+ FileHandler.getAllSummaries().get(j).getSteamID() + ")" + "\n", null);
+						}
+					}
+
+				} catch (BadLocationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			// Reset lastAdded for future use.
+			instance.clearLastAdded();
+		}
+	}
+
+	/**
+	 * Processes the user input and adds players to the program along with the
+	 * game that they were added from.
+	 * 
+	 * @param uI
+	 *            Array of Strings containing user input after using split().
+	 * @param cIDs
+	 *            Array of Strings that will hold Community ID's
+	 * @param jD
+	 *            String containing JSON data to be parsed.
+	 * @param cIDCounter
+	 *            Integer used to check if number of Community ID's exceed the
+	 *            allowed amount.
+	 * @param instance
+	 *            An instance of UserManager.
+	 * @param d
+	 *            Document that information will be printed to.
+	 */
+	private void processPlayerWithGames(String[] uI, String[] cIDs, String jD, int cIDCounter, UserManager instance,
+			Document d) {
+
+		for (int i = 1; i < uI.length; i++) {
+
+			if (!SteamDataParser.getSteamID(uI[i]).equals("Invalid_Steam_ID")) {
+
+				cIDs[cIDCounter] = SteamDataParser.convertToCommunityID(SteamDataParser.getSteamID(uI[i]));
+				cIDCounter++;
+
+				if (cIDCounter % 10 == 0) {
+					String[] game = Arrays.copyOfRange(uI, cIDCounter - 9, cIDCounter + 1);
+					FileHandler.getGames().add(game);
+
+				}
+
+				if (cIDCounter >= 100) {
+					textPane_1.setText("Only 100 players may be added at a time!");
+				}
+
+			}
+
+		}
+
+		jD = SteamWebAPI.getInfo(cIDs);
+
+		// Add user
+		instance.addPlayer(jD, cIDs, cIDCounter);
+
+		// Reset comIDs for future use.
+		for (int i = 0; i < cIDs.length; i++) {
+			cIDs[i] = null;
+		}
+
+		ArrayList<User> lA = instance.getLastAdded();
+
+		if (lA.size() > 0) {
+			textPane_1.setText("The following players have been added:\n");
+
+			for (int i = 0; i < lA.size(); i++) {
+				try {
+
+					for (int j = 0; j < FileHandler.getAllSummaries().size(); j++) {
+						if (lA.get(i).getSteamId().equalsIgnoreCase(FileHandler.getAllSummaries().get(j).getSteamID())) {
+							d.insertString(d.getLength(), i + 1 + ") "
+									+ FileHandler.getAllSummaries().get(j).getPersonaName() + " (ID="
+									+ FileHandler.getAllSummaries().get(j).getSteamID() + ")" + "\n", null);
+						}
+					}
+
+				} catch (BadLocationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			// Reset lastAdded for future use.
+			instance.clearLastAdded();
+		}
+	}
+
+	private PlayerSummary.Player findPlayerWithID(String id) {
+		String cID = SteamDataParser.convertToCommunityID(id);
+		ArrayList<PlayerSummary.Player> summary = FileHandler.getAllSummaries();
+		for (int i = 0; i < summary.size(); i++) {
+			if (summary.get(i).getSteamID().equalsIgnoreCase(cID)) {
+				return summary.get(i);
+			}
+		}
+		return null;
 	}
 }
