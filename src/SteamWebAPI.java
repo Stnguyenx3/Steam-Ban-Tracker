@@ -85,8 +85,13 @@ public class SteamWebAPI {
 
 			System.out.println("EXCEPTION:IOException");
 		}
-
-		return result.toString();
+		
+		if (result == null) {
+			return null;
+		} else {
+			return result.toString();
+		}
+		
 
 	}
 

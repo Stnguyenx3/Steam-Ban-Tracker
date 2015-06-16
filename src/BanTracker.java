@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
@@ -15,8 +16,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -25,6 +31,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -45,6 +52,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.swing.JTable;
+import javax.swing.JTextField;
 
 public class BanTracker extends JFrame {
 
@@ -86,6 +94,9 @@ public class BanTracker extends JFrame {
 	private JTable table;
 
 	private JLabel lblBrowsePlayers;
+	private JLabel lblSettingsLink;
+	private JLabel lblSettingsCont;
+	private JTextField textFieldAPIKEY;
 
 	/**
 	 * Launch the application.
@@ -186,6 +197,8 @@ public class BanTracker extends JFrame {
 		lblDesc.setBounds(30, 11, 740, 450);
 		lblDesc.setText("<html>This program allows you to track CSGO players for Overwatch and VAC bans. "
 				+ "You may use this program to keep track of players from your competitive matchmaking games.<br><br>"
+				+ " <font color='red'><b>NOTE:</b></font> You must provide a Steam API key in the \"Settings\""
+				+ " tab before using this program.<br><br>"
 				+ "<u>Instructions:</u><br><br> To add multiple players at once<br>1) Once all players have connected, "
 				+ "from the CSGO game console*, use the command \"<font color='red'>status</font>\" to obtain player"
 				+ " information for the current competitive game.<br> 2) Copy and paste the output from the console "
@@ -739,7 +752,6 @@ public class BanTracker extends JFrame {
 
 				ArrayList<String[]> allGames = FileHandler.getGames();
 
-				System.out.println(allGames.size());
 				for (int i = 0; i < allGames.size(); i++) {
 
 					try {
@@ -838,6 +850,79 @@ public class BanTracker extends JFrame {
 
 		panel_6 = new JPanel();
 		tabbedPane.addTab("Settings", null, panel_6, null);
+		panel_6.setLayout(null);
+
+		JLabel lblSettingsAPI = new JLabel();
+		lblSettingsAPI
+				.setText("<html>A Steam Web API key is required for this program to work. Steam limits an API key to"
+						+ " 100,000 requests per day. Using your own unique API key wouold make it harder to reach"
+						+ " this limit. In order to get a Steam Web API key, you must go to the following link and"
+						+ " sign in with your Steam account.</html>");
+		lblSettingsAPI.setVerticalAlignment(SwingConstants.TOP);
+		lblSettingsAPI.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+		lblSettingsAPI.setBounds(10, 11, 770, 70);
+		panel_6.add(lblSettingsAPI);
+
+		try {
+			URI uri = new URI("https://steamcommunity.com/login/home/?goto=%2Fdev%2Fapikey");
+
+			lblSettingsLink = new JLabel();
+			lblSettingsLink.setHorizontalAlignment(SwingConstants.CENTER);
+			lblSettingsLink.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent arg0) {
+
+					if (Desktop.isDesktopSupported()) {
+
+						try {
+							Desktop.getDesktop().browse(uri);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+
+					} else {
+						JOptionPane.showMessageDialog(panel_6, "Unable to open URL, please visit it manually.");
+					}
+				}
+			});
+
+		} catch (URISyntaxException e1) {
+			e1.printStackTrace();
+		}
+
+		lblSettingsLink.setText("<html><a href=\"\">https://steamcommunity.com/login/home/?goto=%2Fdev%2Fapikey</a>");
+		lblSettingsLink.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+		lblSettingsLink.setBounds(10, 80, 770, 28);
+		panel_6.add(lblSettingsLink);
+
+		lblSettingsCont = new JLabel();
+		lblSettingsCont.setHorizontalAlignment(SwingConstants.CENTER);
+		lblSettingsCont.setText("<html>After getting an API key, enter it here and press save</html>");
+		lblSettingsCont.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+		lblSettingsCont.setBounds(10, 119, 770, 28);
+
+		panel_6.add(lblSettingsCont);
+
+		textFieldAPIKEY = new JTextField();
+
+		// Only display api key if the file exists.
+		Path path = Paths.get("apikey.txt");
+		if (Files.exists(path)) {
+			textFieldAPIKEY.setText(FileHandler.getAPIKey());
+		}	
+
+		textFieldAPIKEY.setBounds(10, 158, 640, 28);
+		panel_6.add(textFieldAPIKEY);
+		textFieldAPIKEY.setColumns(10);
+
+		JButton btnSaveAPIKEY = new JButton("Save");
+		btnSaveAPIKEY.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				FileHandler.writeToFile("apikey.txt", textFieldAPIKEY.getText());
+			}
+		});
+		btnSaveAPIKEY.setBounds(660, 158, 120, 28);
+		panel_6.add(btnSaveAPIKEY);
 
 	}
 
@@ -955,6 +1040,12 @@ public class BanTracker extends JFrame {
 		}
 
 		jD = SteamWebAPI.getInfo(cIDs);
+
+		if (jD == null) {
+			JOptionPane
+					.showMessageDialog(panel_1,
+							"Error getting information from Steam servers. Servers may be down or you have an invalid API key.");
+		}
 
 		// Add user
 		instance.addPlayer(jD, cIDs, cIDCounter);

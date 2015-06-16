@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -6,8 +7,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
 
 /**
  * Handles reading/writing of files.
@@ -32,10 +36,19 @@ public class FileHandler implements Serializable {
 	public static void writeToFile(String fileName, Object objToWrite) {
 
 		try {
+			// Write object to file.
 			FileOutputStream fOS = new FileOutputStream(fileName);
 			ObjectOutputStream oOS = new ObjectOutputStream(fOS);
 			oOS.writeObject(objToWrite);
 			oOS.close();
+			
+			// Write string to text file so that it can be displayed.
+			if (fileName.equalsIgnoreCase("apikey.txt")) {
+				File file = new File(fileName);
+				PrintWriter pw = new PrintWriter(file);
+				pw.print(objToWrite);
+				pw.close();
+			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -63,14 +76,15 @@ public class FileHandler implements Serializable {
 				}
 			} else if (objType.equalsIgnoreCase("ArrayList<String[]>")) {
 				games = (ArrayList<String[]>) oIS.readObject();
-			} else {
+			} else if (objType.equalsIgnoreCase("apikey")) {
+				APIKEY = (String) oIS.readObject();
+			}else {
 				System.out.println("Object type " + objType + " needs to be implemented!");
 			}
 
 			oIS.close();
 
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -123,7 +137,7 @@ public class FileHandler implements Serializable {
 			APIKEY = br.readLine();
 
 		} catch (FileNotFoundException e) {
-
+			JOptionPane.showMessageDialog(BanTracker.getFrames()[0], "File not found! Did you save your API key?");
 			e.printStackTrace();
 
 		} catch (IOException e) {

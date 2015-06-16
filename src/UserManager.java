@@ -57,59 +57,63 @@ public class UserManager {
 		// Deserialize JSON data into SteamUsers Object.
 		SteamUsers newUsr = gson.fromJson(jData, SteamUsers.class);
 
-		// Make sure a user has been found before adding to list.
-		if (!newUsr.isEmpty()) {
+		if (newUsr != null) {
+			// Make sure a user has been found before adding to list.
+			if (!newUsr.isEmpty()) {
 
-			// Initialize Date
-			//DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy 'at' HH:mm:ss z");
-			DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy");
-			Date date = new Date();
-			String dateAdded = dateFormat.format(date);
+				// Initialize Date
+				// DateFormat dateFormat = new
+				// SimpleDateFormat("MM/dd/yy 'at' HH:mm:ss z");
+				DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy");
+				Date date = new Date();
+				String dateAdded = dateFormat.format(date);
 
-			for (int i = 0; i < newUsr.getSize(); i++) {
+				for (int i = 0; i < newUsr.getSize(); i++) {
 
-				User currentUser = newUsr.getPlayer(i);
-				User user = null;
+					User currentUser = newUsr.getPlayer(i);
+					User user = null;
 
-				if (!trackedPlayers.contains(currentUser)) {
-					user = new User(currentUser.getSteamId(), currentUser.getCommunityBanned(),
-							currentUser.getVacBan(), currentUser.getNumberOfBans(), currentUser.getDaysSinceLastBan(),
-							currentUser.getEconomyBanned(), currentUser.getNumberOfGameBans(), dateAdded);
-				} else {
-					int index = trackedPlayers.indexOf(currentUser);
-					user = User.updateUser(trackedPlayers.get(index), dateAdded);
+					if (!trackedPlayers.contains(currentUser)) {
+						user = new User(currentUser.getSteamId(), currentUser.getCommunityBanned(),
+								currentUser.getVacBan(), currentUser.getNumberOfBans(),
+								currentUser.getDaysSinceLastBan(), currentUser.getEconomyBanned(),
+								currentUser.getNumberOfGameBans(), dateAdded);
+					} else {
+						int index = trackedPlayers.indexOf(currentUser);
+						user = User.updateUser(trackedPlayers.get(index), dateAdded);
+					}
+
+					// Check if user is already being tracked
+					if (!trackedPlayers.contains(user)) {
+						trackedPlayers.add(user);
+						lastAdded.add(user);
+
+					} else {
+						alreadyTracked.add(user);
+						// Update user information
+						updatedUsers.add(user);
+						// System.out.println(user.getSteamId() +
+						// " has been updated!");
+					}
 				}
 
-				// Check if user is already being tracked
-				if (!trackedPlayers.contains(user)) {
-					trackedPlayers.add(user);
-					lastAdded.add(user);
-
-				} else {
-					alreadyTracked.add(user);
-					// Update user information
-					updatedUsers.add(user);
-					// System.out.println(user.getSteamId() +
-					// " has been updated!");
+				if (lastAdded.size() > 0) {
+					// Get Player Summaries and add to ArrayList.
+					parsePlayerSummary(lastAdded);
 				}
+
+				// Sort trackedPlayers, trackedSummaries, and updatedUsers so
+				// the
+				// player and their
+				// summaries match.
+				Collections.sort(trackedPlayers);
+				Collections.sort(trackedSummaries);
+				Collections.sort(updatedUsers);
+
+			} else {
+				System.out.println("User(s) does not exist!");
 			}
-
-			if (lastAdded.size() > 0) {
-				// Get Player Summaries and add to ArrayList.
-				parsePlayerSummary(lastAdded);
-			}
-
-			// Sort trackedPlayers, trackedSummaries, and updatedUsers so the
-			// player and their
-			// summaries match.
-			Collections.sort(trackedPlayers);
-			Collections.sort(trackedSummaries);
-			Collections.sort(updatedUsers);
-
-		} else {
-			System.out.println("User(s) does not exist!");
 		}
-
 	}
 
 	/**
