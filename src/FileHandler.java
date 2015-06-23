@@ -104,24 +104,28 @@ public class FileHandler implements Serializable {
 		return tracked;
 	}
 
+	/**
+	 * 
+	 * @return ArrayList of sorted Player objects that contain a players summary.
+	 */
 	public static ArrayList<PlayerSummary.Player> getAllSummaries() {
 		return trackedSummaries;
 	}
 
+	/**
+	 * 
+	 * @return ArrayList of unsorted Player objects that contain a players summary.
+	 */
 	public static ArrayList<PlayerSummary.Player> getAllSummariesUnsorted() {
 		return trackedSummariesUnsorted;
 	}
 
+	/**
+	 * 
+	 * @return ArrayList of String Arrays that contain 10 players from a game.
+	 */
 	public static ArrayList<String[]> getGames() {
 		return games;
-	}
-
-	public static String getSavedString() {
-		return savedString;
-	}
-
-	public static void setSavedString(String str) {
-		savedString = str;
 	}
 
 	/**
@@ -148,6 +152,10 @@ public class FileHandler implements Serializable {
 		return APIKEY;
 	}
 
+	/**
+	 *  Updates an ArrayList containing User objects with new information from Steam Web API.
+	 * @param a ArrayList of User objects to be updated.
+	 */
 	public static void updateArrayList(ArrayList<User> a) {
 		tracked = a;
 	}

@@ -13,11 +13,6 @@ import java.util.ArrayList;
  */
 public class SteamWebAPI {
 
-	// TODO GetPlayerBans returns Community, VAC, and Economy ban statuses for
-	// given players.
-	// TODO GetSchemaForGame returns gamename, gameversion and
-	// availablegamestats(achievements and stats).
-
 	// URL components
 	private static String baseURL = "http://api.steampowered.com/";
 	private static String interfaceName = "ISteamUser";
@@ -64,7 +59,7 @@ public class SteamWebAPI {
 
 			URL url = new URL(URLToRequest + uIDsString);
 
-			//System.out.println(url);
+			// System.out.println(url);
 
 			URLConnection conn = url.openConnection();
 			InputStream is = conn.getInputStream();
@@ -85,16 +80,20 @@ public class SteamWebAPI {
 
 			System.out.println("EXCEPTION:IOException");
 		}
-		
+
 		if (result == null) {
 			return null;
 		} else {
 			return result.toString();
 		}
-		
 
 	}
 
+	/**
+	 * Get User profile names.
+	 * @param communityID String containing the Steam Community ID of the player to get aliases for.
+	 * @return String containing all User aliases and the time it was changed.
+	 */
 	public static String getUserAlias(String communityID) {
 		// http://steamcommunity.com/profiles/{steam64BitId}/ajaxaliases
 

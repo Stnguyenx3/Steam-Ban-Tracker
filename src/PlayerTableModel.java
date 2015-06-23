@@ -3,7 +3,7 @@ import javax.swing.table.AbstractTableModel;
 
 /**
  * Class used to handle data to be used with JTables. Converts ArrayList of User
- * and Player objects into a 2D Arrays to be inserted into a JTable.
+ * and Player objects into a 2D Array to be inserted into a JTable.
  * 
  * @author Steven
  *

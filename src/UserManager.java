@@ -271,6 +271,9 @@ public class UserManager {
 		alreadyTracked.clear();
 	}
 
+	/**
+	 * Send request to Steam Web API to update all Users being tracked.
+	 */
 	public void updateUsers() {
 
 		ArrayList<User> old = FileHandler.getAllPlayers();
@@ -289,10 +292,17 @@ public class UserManager {
 
 	}
 
+	/**
+	 * 
+	 * @return ArrayList of updated User objects.
+	 */
 	public ArrayList<User> getUpdatedUsers() {
 		return updatedUsers;
 	}
 
+	/**
+	 * Clear the ArrayList of updated Users so that it can be used for the next request.
+	 */
 	public void clearUpdatedUsers() {
 		updatedUsers.clear();
 	}

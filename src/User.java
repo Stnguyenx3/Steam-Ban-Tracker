@@ -1,7 +1,7 @@
 import java.io.Serializable;
 
 /**
- * Class used to structure the results of GetPlayerBans/v1.
+ * Class used to structure the results of GetPlayerBans/v1 from the Steam Web API.
  * 
  * @author Steven
  *

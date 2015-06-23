@@ -1,6 +1,11 @@
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * Class used by Gson to parse JSON data.
+ * @author Steven
+ *
+ */
 public class PlayerSummary {
 
 	// Variable name must be "response" because GSON uses reflection lookup.

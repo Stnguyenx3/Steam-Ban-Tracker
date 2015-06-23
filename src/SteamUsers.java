@@ -1,5 +1,10 @@
 import java.util.ArrayList;
 
+/**
+ * Class representing a collection of Steam Users. Also used by Gson to parse JSON data.
+ * @author Steven
+ *
+ */
 public class SteamUsers {
 
 	// Variable name set by Steam Web API!
