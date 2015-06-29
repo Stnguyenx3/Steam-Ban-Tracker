@@ -98,6 +98,9 @@ public class BanTracker extends JFrame {
 	private JLabel lblSettingsCont;
 	private JTextField textFieldAPIKEY;
 
+	private ArrayList<User> oldUsers = new ArrayList<User>();
+	private ArrayList<User> newUsers = new ArrayList<User>();
+
 	/**
 	 * Launch the application.
 	 */
@@ -799,9 +802,9 @@ public class BanTracker extends JFrame {
 
 				uM.updateUsers();
 
-				ArrayList<User> oldUsers = uM.getTracked();
-				ArrayList<User> newUsers = uM.getUpdatedUsers();
-
+				oldUsers = uM.getTracked();
+				newUsers = uM.getUpdatedUsers();
+				
 				Document doc = textPane_2.getDocument();
 
 				try {
@@ -823,12 +826,12 @@ public class BanTracker extends JFrame {
 
 					doc.insertString(doc.getLength(), "Finished checking for bans.", null);
 
-					// Update Users
-					FileHandler.updateArrayList(newUsers);
-
 				} catch (BadLocationException e1) {
 					e1.printStackTrace();
 				}
+				
+				// Update Users
+				FileHandler.updateArrayList(newUsers);
 
 			}
 		});
@@ -909,7 +912,7 @@ public class BanTracker extends JFrame {
 		Path path = Paths.get("apikey.txt");
 		if (Files.exists(path)) {
 			textFieldAPIKEY.setText(FileHandler.getAPIKey());
-		}	
+		}
 
 		textFieldAPIKEY.setBounds(10, 158, 640, 28);
 		panel_6.add(textFieldAPIKEY);

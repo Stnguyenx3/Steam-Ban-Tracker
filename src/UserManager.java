@@ -1,9 +1,12 @@
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 
 /**
@@ -276,19 +279,30 @@ public class UserManager {
 	 */
 	public void updateUsers() {
 
-		ArrayList<User> old = FileHandler.getAllPlayers();
-		String[] ids = new String[old.size()];
+		// Clear updatedUsers so that it may be used again.
+		updatedUsers.clear();
+		
+		String[] ids = new String[trackedPlayers.size()];
 
-		for (int i = 0; i < old.size(); i++) {
-			ids[i] = old.get(i).getSteamId();
+		for (int i = 0; i < trackedPlayers.size(); i++) {
+			ids[i] = trackedPlayers.get(i).getSteamId();
 		}
 
-		String jsonData = SteamWebAPI.getInfo(ids);
+		// Split ids Array to have 100 elements. The Steam Web API allows a
+		// maximum of 100 players per request.
 
-		// Clear updatedUsers for new request.
-		clearUpdatedUsers();
+		List<String> allIDs = Arrays.asList(ids);
+		List<List<String>> subIDs = Lists.partition(allIDs, 100);
 
-		addPlayer(jsonData, ids, ids.length);
+		for (int i = 0; i < subIDs.size(); i++) {
+			
+			String[] subIDsArr = new String[subIDs.get(i).size()];
+			subIDsArr = subIDs.get(i).toArray(subIDsArr);
+
+			String jsonData = SteamWebAPI.getInfo(subIDsArr);
+
+			addPlayer(jsonData, subIDsArr, subIDsArr.length);
+		}
 
 	}
 
@@ -298,13 +312,6 @@ public class UserManager {
 	 */
 	public ArrayList<User> getUpdatedUsers() {
 		return updatedUsers;
-	}
-
-	/**
-	 * Clear the ArrayList of updated Users so that it can be used for the next request.
-	 */
-	public void clearUpdatedUsers() {
-		updatedUsers.clear();
 	}
 
 }

@@ -7,5 +7,6 @@
 			<attribute name="javadoc_location" value="file:/C:/Users/Steven/workspace/Steam%20Ban%20Tracker/lib/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="F:/Documents/GitHub/Steam Ban Tracker/lib/guava-18.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
