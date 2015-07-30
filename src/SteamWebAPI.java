@@ -130,25 +130,14 @@ public class SteamWebAPI {
 	 *            summary of.
 	 * @return A string containing the player summary in JSON format.
 	 */
-	public static String getPlayerSummaries(ArrayList<User> communityID) {
+	public static String getPlayerSummaries(String communityID) {
 
 		try {
 
 			userIDs.delete(0, userIDs.length());
 
-			for (int i = 0; i < communityID.size(); i++) {
-
-				userIDs.append(communityID.get(i).getSteamId() + ",");
-
-			}
-
-			if (communityID.size() > 0) {
-
-				// Remove extra comma at end of String.
-				String uIDsString = userIDs.substring(0, userIDs.length() - 1);
-
 				URL url = new URL(baseURL + interfaceName + "/GetPlayerSummaries/v0002/?key=" + FileHandler.getAPIKey()
-						+ "&steamids=" + uIDsString);
+						+ "&steamids=" + communityID);
 				// System.out.println(url);
 				URLConnection conn = url.openConnection();
 				InputStream is = conn.getInputStream();
@@ -159,9 +148,9 @@ public class SteamWebAPI {
 					summaries.append(line + "\n");
 				}
 
-				return summaries.toString();
-
-			}
+				if (summaries.toString().contains("steamid")) {
+					return summaries.toString();
+				}
 
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
@@ -170,7 +159,8 @@ public class SteamWebAPI {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		return "No summary!";
 
-		return "No Summaries.";
 	}
 }

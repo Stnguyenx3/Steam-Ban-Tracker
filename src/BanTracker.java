@@ -11,9 +11,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.BufferedReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -25,6 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -42,6 +45,7 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableModel;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.xml.parsers.ParserConfigurationException;
@@ -61,39 +65,16 @@ public class BanTracker extends JFrame {
 	private JTextPane textPane;
 	private JPanel panel_1;
 	private JPanel panel_2;
+	private JPanel panel_3;
 	private JPanel panel_4;
 	private JPanel panel_5;
-	private JPanel panel_3;
-	private JPanel panel_6;
 	private JTextPane textPane_1;
 	private JTextPane textPane_2;
 	private JTextPane textPane_3;
 	private JScrollPane scrollPane_1;
 
-	JLabel lblAvatar1 = new JLabel();
-	JLabel lblAvatar1Info = new JLabel();
-	JLabel lblAvatar2 = new JLabel();
-	JLabel lblAvatar2Info = new JLabel();
-	JLabel lblAvatar3 = new JLabel();
-	JLabel lblAvatar3Info = new JLabel();
-	JLabel lblAvatar4 = new JLabel();
-	JLabel lblAvatar4Info = new JLabel();
-	JLabel lblAvatar5 = new JLabel();
-	JLabel lblAvatar5Info = new JLabel();
-	JLabel lblAvatar6 = new JLabel();
-	JLabel lblAvatar6Info = new JLabel();
-	JLabel lblAvatar7 = new JLabel();
-	JLabel lblAvatar7Info = new JLabel();
-	JLabel lblAvatar8 = new JLabel();
-	JLabel lblAvatar8Info = new JLabel();
-	JLabel lblAvatar9 = new JLabel();
-	JLabel lblAvatar9Info = new JLabel();
-	JLabel lblAvatar10 = new JLabel();
-	JLabel lblAvatar10Info = new JLabel();
-
-	private JTable table;
-
 	private JLabel lblBrowsePlayers;
+	private JLabel lblBrowseBannedPlayers;
 	private JLabel lblSettingsLink;
 	private JLabel lblSettingsCont;
 	private JTextField textFieldAPIKEY;
@@ -141,10 +122,7 @@ public class BanTracker extends JFrame {
 							// JOptionPane.QUESTION_MESSAGE, null, null, null);
 							// System.out.println("confirm ="+ confirm);
 							// if (confirm == JOptionPane.YES_OPTION) {
-							FileHandler.writeToFile("users.tmp", FileHandler.getAllPlayers());
-							FileHandler.writeToFile("summaries.tmp", FileHandler.getAllSummaries());
-							FileHandler.writeToFile("s_unsorted.tmp", FileHandler.getAllSummariesUnsorted());
-							FileHandler.writeToFile("games.tmp", FileHandler.getGames());
+							FileHandler.writeToFile("players.tmp", FileHandler.getCompletedPlayers());
 							System.out.println("Finished saving...");
 							// System.exit(0);
 							// }
@@ -163,10 +141,7 @@ public class BanTracker extends JFrame {
 		});
 
 		System.out.println("Loading program...");
-		FileHandler.readFromFile("users.tmp", "ArrayList<User>");
-		FileHandler.readFromFile("s_unsorted.tmp", "ArrayList<PlayerSummary.Player>");
-		FileHandler.readFromFile("summaries.tmp", "ArrayList<PlayerSummary.Player>");
-		FileHandler.readFromFile("games.tmp", "ArrayList<String[]>");
+		FileHandler.readFromFile("players.tmp", "ArrayList<CompletedPlayer>");
 
 	}
 
@@ -232,7 +207,7 @@ public class BanTracker extends JFrame {
 				String[] uInput = null;
 				String[] comIDs = new String[100];
 				int comIDCounter = 0;
-				ArrayList<PlayerSummary.Player> summaries = FileHandler.getAllSummaries();
+				ArrayList<CompletedPlayer> pSummaries = FileHandler.getCompletedPlayers();
 
 				UserManager uMInstance = UserManager.getInstance();
 
@@ -281,11 +256,12 @@ public class BanTracker extends JFrame {
 
 							if (uMInstance.getLastAdded().size() == 1) {
 
-								for (int j = 0; j < summaries.size(); j++) {
+								for (int j = 0; j < pSummaries.size(); j++) {
 									if (uMInstance.getLastAdded().get(0).getSteamId()
-											.equalsIgnoreCase(summaries.get(j).getSteamID())) {
+											.equalsIgnoreCase(pSummaries.get(j).getSummary().getSteamID())) {
 
-										textPane_1.setText(summaries.get(j).getPersonaName() + " has been added.");
+										textPane_1.setText(pSummaries.get(j).getSummary().getPersonaName()
+												+ " has been added.");
 
 									}
 								}
@@ -294,11 +270,11 @@ public class BanTracker extends JFrame {
 
 							if (uMInstance.getCurrentlyTracked().size() == 1) {
 
-								for (int j = 0; j < summaries.size(); j++) {
+								for (int j = 0; j < pSummaries.size(); j++) {
 									if (uMInstance.getCurrentlyTracked().get(0).getSteamId()
-											.equalsIgnoreCase(summaries.get(j).getSteamID())) {
+											.equalsIgnoreCase(pSummaries.get(j).getSummary().getSteamID())) {
 
-										textPane_1.setText(summaries.get(j).getPersonaName()
+										textPane_1.setText(pSummaries.get(j).getSummary().getPersonaName()
 												+ " is already being tracked and will be updated!");
 
 									}
@@ -329,6 +305,18 @@ public class BanTracker extends JFrame {
 					}
 
 				} else if (userInput.contains("#")) {
+					
+					// Write user input to text file to be kept as a log.
+					try {
+					FileWriter writer = new FileWriter("playerLog.txt", true);
+					PrintWriter printer = new PrintWriter(writer);
+					printer.printf("%s", userInput);
+					printer.println();
+					printer.close();
+					} catch (IOException e) {
+						System.err.println("IOException when writing string to file!");
+					}
+
 
 					uInput = userInput.split("#");
 					String jsonData = "";
@@ -356,13 +344,17 @@ public class BanTracker extends JFrame {
 							}
 
 							for (int i = 0; i < uMInstance.getCurrentlyTracked().size(); i++) {
-								for (int j = 0; j < summaries.size(); j++) {
+								for (int j = 0; j < pSummaries.size(); j++) {
 									try {
 										if (uMInstance.getCurrentlyTracked().get(i).getSteamId()
-												.equalsIgnoreCase(summaries.get(j).getSteamID())) {
+												.equalsIgnoreCase(pSummaries.get(j).getSummary().getSteamID())) {
 
-											doc.insertString(doc.getLength(), summaries.get(j).getPersonaName()
-													+ " (ID=" + summaries.get(j).getSteamID() + ")" + "\n", null);
+											doc.insertString(doc.getLength(), pSummaries.get(j).getSummary()
+													.getPersonaName()
+													+ " (ID="
+													+ pSummaries.get(j).getSummary().getSteamID()
+													+ ")"
+													+ "\n", null);
 
 										}
 
@@ -416,266 +408,11 @@ public class BanTracker extends JFrame {
 		scrollPane_1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
 		panel_2 = new JPanel();
-		tabbedPane.addTab("Recently Added", null, panel_2, null);
+		tabbedPane.addTab("Browse Players", null, panel_2, null);
 		panel_2.setLayout(null);
 
-		JLabel lblInfo1 = new JLabel("Refreshing may take a while!");
-		lblInfo1.setVerticalAlignment(SwingConstants.TOP);
-		lblInfo1.setHorizontalAlignment(SwingConstants.CENTER);
-		lblInfo1.setBounds(10, 63, 770, 367);
-		lblInfo1.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
-		panel_2.add(lblInfo1);
-
-		textPane_3 = new JTextPane();
-		textPane_3.setText("Click on a profile to get more information!");
-		textPane_3.setEditable(false);
-		textPane_3.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		textPane_3.setBounds(10, 441, 770, 291);
-		panel_2.add(textPane_3);
-
-		Document doc = textPane_3.getDocument();
-		ArrayList<PlayerSummary.Player> summaries = FileHandler.getAllSummariesUnsorted();
-		// ArrayList<User> players = FileHandler.getAllPlayers();
-
-		lblAvatar1.setBounds(10, 61, 64, 64);
-		lblAvatar1Info.setBounds(80, 61, 225, 25);
-		lblAvatar1.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				ArrayList<User> players = FileHandler.getAllPlayers();
-				int playerIndex = getIndex(players, summaries, 10);
-				textPane_3.setText("");
-				displayInfo(players, summaries, doc, playerIndex, 10);
-
-			}
-		});
-		panel_2.add(lblAvatar1);
-		panel_2.add(lblAvatar1Info);
-
-		lblAvatar2.setBounds(10, 135, 64, 64);
-		lblAvatar2Info.setBounds(80, 135, 225, 25);
-		lblAvatar2.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				ArrayList<User> players = FileHandler.getAllPlayers();
-				int playerIndex = getIndex(players, summaries, 9);
-				textPane_3.setText("");
-				displayInfo(players, summaries, doc, playerIndex, 9);
-
-			}
-		});
-		panel_2.add(lblAvatar2);
-		panel_2.add(lblAvatar2Info);
-
-		lblAvatar3.setBounds(10, 209, 64, 64);
-		lblAvatar3Info.setBounds(80, 209, 225, 25);
-		lblAvatar3.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				ArrayList<User> players = FileHandler.getAllPlayers();
-				int playerIndex = getIndex(players, summaries, 8);
-				textPane_3.setText("");
-				displayInfo(players, summaries, doc, playerIndex, 8);
-
-			}
-		});
-		panel_2.add(lblAvatar3);
-		panel_2.add(lblAvatar3Info);
-
-		lblAvatar4.setBounds(10, 283, 64, 64);
-		lblAvatar4Info.setBounds(80, 283, 225, 25);
-		lblAvatar4.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				ArrayList<User> players = FileHandler.getAllPlayers();
-				int playerIndex = getIndex(players, summaries, 7);
-				textPane_3.setText("");
-				displayInfo(players, summaries, doc, playerIndex, 7);
-
-			}
-		});
-		panel_2.add(lblAvatar4);
-		panel_2.add(lblAvatar4Info);
-
-		lblAvatar5.setBounds(10, 357, 64, 64);
-		lblAvatar5Info.setBounds(80, 357, 225, 25);
-		lblAvatar5.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				ArrayList<User> players = FileHandler.getAllPlayers();
-				int playerIndex = getIndex(players, summaries, 6);
-				textPane_3.setText("");
-				displayInfo(players, summaries, doc, playerIndex, 6);
-
-			}
-		});
-		panel_2.add(lblAvatar5);
-		panel_2.add(lblAvatar5Info);
-
-		lblAvatar6.setBounds(310, 61, 64, 64);
-		lblAvatar6Info.setBounds(380, 61, 225, 25);
-		lblAvatar6.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				ArrayList<User> players = FileHandler.getAllPlayers();
-				int playerIndex = getIndex(players, summaries, 5);
-				textPane_3.setText("");
-				displayInfo(players, summaries, doc, playerIndex, 5);
-
-			}
-		});
-		panel_2.add(lblAvatar6);
-		panel_2.add(lblAvatar6Info);
-
-		lblAvatar7.setBounds(310, 135, 64, 64);
-		lblAvatar7Info.setBounds(380, 135, 225, 25);
-		lblAvatar7.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				ArrayList<User> players = FileHandler.getAllPlayers();
-				int playerIndex = getIndex(players, summaries, 4);
-				textPane_3.setText("");
-				displayInfo(players, summaries, doc, playerIndex, 4);
-
-			}
-		});
-		panel_2.add(lblAvatar7);
-		panel_2.add(lblAvatar7Info);
-
-		lblAvatar8.setBounds(310, 209, 64, 64);
-		lblAvatar8Info.setBounds(380, 209, 225, 25);
-		lblAvatar8.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				ArrayList<User> players = FileHandler.getAllPlayers();
-				int playerIndex = getIndex(players, summaries, 3);
-				textPane_3.setText("");
-				displayInfo(players, summaries, doc, playerIndex, 3);
-
-			}
-		});
-		panel_2.add(lblAvatar8);
-		panel_2.add(lblAvatar8Info);
-
-		lblAvatar9.setBounds(310, 283, 64, 64);
-		lblAvatar9Info.setBounds(380, 283, 225, 25);
-		lblAvatar9.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				ArrayList<User> players = FileHandler.getAllPlayers();
-				int playerIndex = getIndex(players, summaries, 2);
-				textPane_3.setText("");
-				displayInfo(players, summaries, doc, playerIndex, 2);
-
-			}
-		});
-		panel_2.add(lblAvatar9);
-		panel_2.add(lblAvatar9Info);
-
-		lblAvatar10.setBounds(310, 357, 64, 64);
-		lblAvatar10Info.setBounds(380, 357, 225, 25);
-		lblAvatar10.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				ArrayList<User> players = FileHandler.getAllPlayers();
-				int playerIndex = getIndex(players, summaries, 1);
-				textPane_3.setText("");
-				displayInfo(players, summaries, doc, playerIndex, 1);
-
-			}
-		});
-		panel_2.add(lblAvatar10);
-		panel_2.add(lblAvatar10Info);
-
-		JButton btnRefresh = new JButton("Refresh");
-		btnRefresh.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-
-				lblInfo1.setText("");
-
-				int numOfPlayers = FileHandler.getAllSummariesUnsorted().size() - 1;
-
-				if (numOfPlayers >= 9) {
-					try {
-
-						URL url1 = new URL(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 9)
-								.getAvatarMedium());
-						Image img1 = ImageIO.read(url1);
-						lblAvatar1.setIcon(new ImageIcon(img1));
-						lblAvatar1Info.setText(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 9)
-								.getPersonaName());
-
-						URL url2 = new URL(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 8)
-								.getAvatarMedium());
-						Image img2 = ImageIO.read(url2);
-						lblAvatar2.setIcon(new ImageIcon(img2));
-
-						lblAvatar2Info.setText(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 8)
-								.getPersonaName());
-
-						URL url3 = new URL(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 7)
-								.getAvatarMedium());
-						Image img3 = ImageIO.read(url3);
-						lblAvatar3.setIcon(new ImageIcon(img3));
-						lblAvatar3Info.setText(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 7)
-								.getPersonaName());
-
-						URL url4 = new URL(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 6)
-								.getAvatarMedium());
-						Image img4 = ImageIO.read(url4);
-						lblAvatar4.setIcon(new ImageIcon(img4));
-						lblAvatar4Info.setText(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 6)
-								.getPersonaName());
-
-						URL url5 = new URL(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 5)
-								.getAvatarMedium());
-						Image img5 = ImageIO.read(url5);
-						lblAvatar5.setIcon(new ImageIcon(img5));
-						lblAvatar5Info.setText(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 5)
-								.getPersonaName());
-
-						URL url6 = new URL(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 4)
-								.getAvatarMedium());
-						Image img6 = ImageIO.read(url6);
-						lblAvatar6.setIcon(new ImageIcon(img6));
-						lblAvatar6Info.setText(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 4)
-								.getPersonaName());
-
-						URL url7 = new URL(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 3)
-								.getAvatarMedium());
-						Image img7 = ImageIO.read(url7);
-						lblAvatar7.setIcon(new ImageIcon(img7));
-						lblAvatar7Info.setText(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 3)
-								.getPersonaName());
-
-						URL url8 = new URL(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 2)
-								.getAvatarMedium());
-						Image img8 = ImageIO.read(url8);
-						lblAvatar8.setIcon(new ImageIcon(img8));
-						lblAvatar8Info.setText(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 2)
-								.getPersonaName());
-
-						URL url9 = new URL(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 1)
-								.getAvatarMedium());
-						Image img9 = ImageIO.read(url9);
-						lblAvatar9.setIcon(new ImageIcon(img9));
-						lblAvatar9Info.setText(FileHandler.getAllSummariesUnsorted().get(numOfPlayers - 1)
-								.getPersonaName());
-
-						URL url10 = new URL(FileHandler.getAllSummariesUnsorted().get(numOfPlayers).getAvatarMedium());
-						Image img10 = ImageIO.read(url10);
-						lblAvatar10.setIcon(new ImageIcon(img10));
-						lblAvatar10Info.setText(FileHandler.getAllSummariesUnsorted().get(numOfPlayers)
-								.getPersonaName());
-
-					} catch (IOException ioE) {
-						ioE.printStackTrace();
-					}
-
-				} else {
-					lblInfo1.setText("At least 10 players must be added!");
-				}
-
-			}
-		});
-		btnRefresh.setBounds(10, 11, 770, 40);
-		panel_2.add(btnRefresh);
-
-		panel_3 = new JPanel();
-		tabbedPane.addTab("Browse Players", null, panel_3, null);
-		panel_3.setLayout(null);
-
-		table = new JTable(new PlayerTableModel());
+		TableModel model = new PlayerTableModel(FileHandler.getCompletedPlayers());
+		JTable table = new JTable(model);
 		table.getTableHeader().setReorderingAllowed(false);
 
 		// Center cell values.
@@ -694,103 +431,35 @@ public class BanTracker extends JFrame {
 				.setHorizontalAlignment(SwingConstants.CENTER);
 
 		// Set the width of each column.
-		table.getColumn("ID").setMinWidth(150);
-		table.getColumn("ID").setMaxWidth(150);
-		table.getColumn("Date added").setMinWidth(75);
-		table.getColumn("Date added").setMaxWidth(75);
-		table.getColumn("Date updated").setMinWidth(85);
-		table.getColumn("Date updated").setMaxWidth(85);
-		table.getColumn("VAC bans").setMinWidth(65);
-		table.getColumn("VAC bans").setMaxWidth(65);
-		table.getColumn("Game bans").setMinWidth(75);
-		table.getColumn("Game bans").setMaxWidth(75);
-		table.getColumn("Last ban (days)").setMinWidth(100);
-		table.getColumn("Last ban (days)").setMaxWidth(100);
-
-		table.setRowHeight(30);
+		setupTable(table);
 
 		JScrollPane tableScrollPane = new JScrollPane(table);
 		tableScrollPane.setBounds(10, 80, 780, 525);
 		tableScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		panel_3.add(tableScrollPane);
+		panel_2.add(tableScrollPane);
 
 		JButton btnRefreshAllPlayers = new JButton("Refresh");
 		btnRefreshAllPlayers.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				PlayerTableModel model = (PlayerTableModel) table.getModel();
-				model.fireTableDataChanged();
-				lblBrowsePlayers.setText("There are currently " + FileHandler.getAllPlayers().size()
+				model.refresh(FileHandler.getCompletedPlayers());
+				lblBrowsePlayers.setText("There are currently " + FileHandler.getCompletedPlayers().size()
 						+ " players being tracked.");
 			}
 		});
 		btnRefreshAllPlayers.setBounds(10, 11, 99, 58);
-		panel_3.add(btnRefreshAllPlayers);
+		panel_2.add(btnRefreshAllPlayers);
 
 		lblBrowsePlayers = new JLabel("");
 		lblBrowsePlayers.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
 		lblBrowsePlayers.setBounds(119, 26, 655, 25);
-		panel_3.add(lblBrowsePlayers);
-		lblBrowsePlayers.setText("There are currently " + FileHandler.getAllPlayers().size()
+		panel_2.add(lblBrowsePlayers);
+		lblBrowsePlayers.setText("There are currently " + FileHandler.getCompletedPlayers().size()
 				+ " players being tracked.");
 
-		JPanel panelGames = new JPanel();
-		tabbedPane.addTab("Games", null, panelGames, null);
-		panelGames.setLayout(null);
-
-		JTextPane textPane_4 = new JTextPane();
-		textPane_4.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		textPane_4.setEditable(false);
-		JScrollPane gameScrollPane = new JScrollPane(textPane_4);
-		gameScrollPane.setBounds(10, 84, 775, 649);
-		gameScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		panelGames.add(gameScrollPane);
-
-		Document gameDoc = textPane_4.getDocument();
-
-		JButton btnRefreshGame = new JButton("Refresh");
-		btnRefreshGame.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-
-				textPane_4.setText("");
-
-				ArrayList<String[]> allGames = FileHandler.getGames();
-
-				for (int i = 0; i < allGames.size(); i++) {
-
-					try {
-
-						gameDoc.insertString(gameDoc.getLength(), "Game " + (i + 1) + "\n", null);
-
-						for (int j = 0; j < allGames.get(i).length; j++) {
-
-							String id = SteamDataParser.getSteamID(allGames.get(i)[j]);
-							PlayerSummary.Player player = findPlayerWithID(id);
-							gameDoc.insertString(gameDoc.getLength(),
-									player.getPersonaName() + "  ->  " + player.getProfileURL() + "\n", null);
-						}
-
-						gameDoc.insertString(gameDoc.getLength(), "\n", null);
-
-					} catch (BadLocationException e) {
-						e.printStackTrace();
-					}
-
-				}
-
-			}
-		});
-		btnRefreshGame.setBounds(10, 11, 99, 58);
-		panelGames.add(btnRefreshGame);
-
-		JLabel lblNewLabel = new JLabel(
-				"For the best results, add players using the complete console output from one a game!");
-		lblNewLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
-		lblNewLabel.setBounds(119, 26, 655, 25);
-		panelGames.add(lblNewLabel);
-
-		panel_4 = new JPanel();
-		tabbedPane.addTab("Check Bans", null, panel_4, null);
-		panel_4.setLayout(null);
+		panel_3 = new JPanel();
+		tabbedPane.addTab("Check Bans", null, panel_3, null);
+		panel_3.setLayout(null);
 
 		UserManager uM = UserManager.getInstance();
 
@@ -804,7 +473,7 @@ public class BanTracker extends JFrame {
 
 				oldUsers = uM.getTracked();
 				newUsers = uM.getUpdatedUsers();
-				
+
 				Document doc = textPane_2.getDocument();
 
 				try {
@@ -829,31 +498,93 @@ public class BanTracker extends JFrame {
 				} catch (BadLocationException e1) {
 					e1.printStackTrace();
 				}
-				
-				// Update Users
-				FileHandler.updateArrayList(newUsers);
 
 			}
 		});
 		button.setFocusPainted(false);
 		button.setBounds(10, 11, 282, 23);
-		panel_4.add(button);
+		panel_3.add(button);
 
 		textPane_2 = new JTextPane();
 		textPane_2.setBounds(65, 485, 314, 107);
 		textPane_2.setEditable(false);
 		JScrollPane scrollPane_2 = new JScrollPane(textPane_2);
 		scrollPane_2.setBounds(10, 45, 770, 400);
-		panel_4.add(scrollPane_2);
+		panel_3.add(scrollPane_2);
 		scrollPane_2.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-		panel_5 = new JPanel();
-		tabbedPane.addTab("Statistics", null, panel_5, null);
-		panel_5.setLayout(null);
+		panel_4 = new JPanel();
+		tabbedPane.addTab("Banned", null, panel_4, null);
+		panel_4.setLayout(null);
 
-		panel_6 = new JPanel();
-		tabbedPane.addTab("Settings", null, panel_6, null);
-		panel_6.setLayout(null);
+		ArrayList<CompletedPlayer> bannedPlayers = new ArrayList<CompletedPlayer>();
+
+		// Populate ArrayList with CompletedPlayers that are banned.
+		for (int i = 0; i < FileHandler.getCompletedPlayers().size(); i++) {
+			CompletedPlayer currentPlayer = FileHandler.getCompletedPlayers().get(i);
+			if (currentPlayer.getUser().getVacBan() == true || currentPlayer.getUser().getNumberOfGameBans() > 1) {
+				bannedPlayers.add(currentPlayer);
+			}
+		}
+
+		TableModel modelBanned = new PlayerTableModel(bannedPlayers);
+		JTable tableBanned = new JTable(modelBanned);
+		tableBanned.getTableHeader().setReorderingAllowed(false);
+		
+		// Center cell values.
+		DefaultTableCellRenderer bannedRenderer = new DefaultTableCellRenderer();
+		bannedRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+		tableBanned.getColumn("ID").setCellRenderer(bannedRenderer);
+		tableBanned.getColumn("Date added").setCellRenderer(bannedRenderer);
+		tableBanned.getColumn("Date updated").setCellRenderer(bannedRenderer);
+		tableBanned.getColumn("VAC bans").setCellRenderer(bannedRenderer);
+		tableBanned.getColumn("Game bans").setCellRenderer(bannedRenderer);
+		tableBanned.getColumn("Last ban (days)").setCellRenderer(bannedRenderer);
+		tableBanned.getColumn("64-Bit SteamID").setCellRenderer(bannedRenderer);
+
+		// Center table header.
+		((DefaultTableCellRenderer) tableBanned.getTableHeader().getDefaultRenderer())
+				.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		// Set the width of each column
+		setupTable(tableBanned);
+		
+		JScrollPane tableBannedScrollPane = new JScrollPane(tableBanned);
+		tableBannedScrollPane.setBounds(10, 80, 780, 525);
+		tableBannedScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		panel_4.add(tableBannedScrollPane);
+		
+		JButton btnRefreshBannedPlayers = new JButton("Refresh");
+		btnRefreshBannedPlayers.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				bannedPlayers.clear();
+				
+				// Populate ArrayList with CompletedPlayers that are banned.
+				for (int i = 0; i < FileHandler.getCompletedPlayers().size(); i++) {
+					CompletedPlayer currentPlayer = FileHandler.getCompletedPlayers().get(i);
+					if (currentPlayer.getUser().getVacBan() == true || currentPlayer.getUser().getNumberOfGameBans() > 1) {
+						bannedPlayers.add(currentPlayer);
+					}
+				}
+				
+				PlayerTableModel modelBanned = (PlayerTableModel) tableBanned.getModel();
+				modelBanned.refresh(bannedPlayers);
+			}
+		});
+		btnRefreshBannedPlayers.setBounds(10, 11, 99, 58);
+		panel_4.add(btnRefreshBannedPlayers);
+		
+		lblBrowseBannedPlayers = new JLabel("");
+		lblBrowseBannedPlayers.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+		lblBrowseBannedPlayers.setBounds(119, 26, 655, 25);
+		panel_4.add(lblBrowseBannedPlayers);
+		lblBrowseBannedPlayers.setText("There are currently " + bannedPlayers.size()
+				+ " players being tracked.");
+
+		panel_5 = new JPanel();
+		tabbedPane.addTab("Settings", null, panel_5, null);
+		panel_5.setLayout(null);
 
 		JLabel lblSettingsAPI = new JLabel();
 		lblSettingsAPI
@@ -864,7 +595,7 @@ public class BanTracker extends JFrame {
 		lblSettingsAPI.setVerticalAlignment(SwingConstants.TOP);
 		lblSettingsAPI.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
 		lblSettingsAPI.setBounds(10, 11, 770, 70);
-		panel_6.add(lblSettingsAPI);
+		panel_5.add(lblSettingsAPI);
 
 		try {
 			URI uri = new URI("https://steamcommunity.com/login/home/?goto=%2Fdev%2Fapikey");
@@ -884,7 +615,7 @@ public class BanTracker extends JFrame {
 						}
 
 					} else {
-						JOptionPane.showMessageDialog(panel_6, "Unable to open URL, please visit it manually.");
+						JOptionPane.showMessageDialog(panel_5, "Unable to open URL, please visit it manually.");
 					}
 				}
 			});
@@ -896,7 +627,7 @@ public class BanTracker extends JFrame {
 		lblSettingsLink.setText("<html><a href=\"\">https://steamcommunity.com/login/home/?goto=%2Fdev%2Fapikey</a>");
 		lblSettingsLink.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
 		lblSettingsLink.setBounds(10, 80, 770, 28);
-		panel_6.add(lblSettingsLink);
+		panel_5.add(lblSettingsLink);
 
 		lblSettingsCont = new JLabel();
 		lblSettingsCont.setHorizontalAlignment(SwingConstants.CENTER);
@@ -904,7 +635,7 @@ public class BanTracker extends JFrame {
 		lblSettingsCont.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
 		lblSettingsCont.setBounds(10, 119, 770, 28);
 
-		panel_6.add(lblSettingsCont);
+		panel_5.add(lblSettingsCont);
 
 		textFieldAPIKEY = new JTextField();
 
@@ -915,7 +646,7 @@ public class BanTracker extends JFrame {
 		}
 
 		textFieldAPIKEY.setBounds(10, 158, 640, 28);
-		panel_6.add(textFieldAPIKEY);
+		panel_5.add(textFieldAPIKEY);
 		textFieldAPIKEY.setColumns(10);
 
 		JButton btnSaveAPIKEY = new JButton("Save");
@@ -925,7 +656,7 @@ public class BanTracker extends JFrame {
 			}
 		});
 		btnSaveAPIKEY.setBounds(660, 158, 120, 28);
-		panel_6.add(btnSaveAPIKEY);
+		panel_5.add(btnSaveAPIKEY);
 
 	}
 
@@ -1027,6 +758,9 @@ public class BanTracker extends JFrame {
 	 *            Document that information will be printed to.
 	 */
 	private void processPlayer(String[] uI, String[] cIDs, String jD, int cIDCounter, UserManager instance, Document d) {
+
+		int oldCount = FileHandler.getCompletedPlayers().size();
+
 		for (int i = 1; i < uI.length; i++) {
 
 			if (!SteamDataParser.getSteamID(uI[i]).equals("Invalid_Steam_ID")) {
@@ -1066,11 +800,13 @@ public class BanTracker extends JFrame {
 			for (int i = 0; i < lA.size(); i++) {
 				try {
 
-					for (int j = 0; j < FileHandler.getAllSummaries().size(); j++) {
-						if (lA.get(i).getSteamId().equalsIgnoreCase(FileHandler.getAllSummaries().get(j).getSteamID())) {
+					for (int j = 0; j < FileHandler.getCompletedPlayers().size(); j++) {
+						if (lA.get(i).getSteamId()
+								.equalsIgnoreCase(FileHandler.getCompletedPlayers().get(j).getUser().getSteamId())) {
 							d.insertString(d.getLength(), i + 1 + ") "
-									+ FileHandler.getAllSummaries().get(j).getPersonaName() + " (ID="
-									+ FileHandler.getAllSummaries().get(j).getSteamID() + ")" + "\n", null);
+									+ FileHandler.getCompletedPlayers().get(j).getSummary().getPersonaName() + " (ID="
+									+ FileHandler.getCompletedPlayers().get(j).getUser().getSteamId() + ")" + "\n",
+									null);
 						}
 					}
 
@@ -1083,6 +819,10 @@ public class BanTracker extends JFrame {
 			// Reset lastAdded for future use.
 			instance.clearLastAdded();
 		}
+
+		int newCount = FileHandler.getCompletedPlayers().size();
+
+		BanTracker.displayInfoBox((newCount - oldCount) + " players have been added.", "Players added");
 	}
 
 	/**
@@ -1106,6 +846,8 @@ public class BanTracker extends JFrame {
 	private void processPlayerWithGames(String[] uI, String[] cIDs, String jD, int cIDCounter, UserManager instance,
 			Document d) {
 
+		int oldCount = FileHandler.getCompletedPlayers().size();
+
 		for (int i = 1; i < uI.length; i++) {
 
 			if (!SteamDataParser.getSteamID(uI[i]).equals("Invalid_Steam_ID")) {
@@ -1115,7 +857,7 @@ public class BanTracker extends JFrame {
 
 				if (cIDCounter % 10 == 0) {
 					String[] game = Arrays.copyOfRange(uI, cIDCounter - 9, cIDCounter + 1);
-					FileHandler.getGames().add(game);
+					// FileHandler.getGames().add(game);
 
 				}
 
@@ -1145,11 +887,13 @@ public class BanTracker extends JFrame {
 			for (int i = 0; i < lA.size(); i++) {
 				try {
 
-					for (int j = 0; j < FileHandler.getAllSummaries().size(); j++) {
-						if (lA.get(i).getSteamId().equalsIgnoreCase(FileHandler.getAllSummaries().get(j).getSteamID())) {
+					for (int j = 0; j < FileHandler.getCompletedPlayers().size(); j++) {
+						if (lA.get(i).getSteamId()
+								.equalsIgnoreCase(FileHandler.getCompletedPlayers().get(j).getUser().getSteamId())) {
 							d.insertString(d.getLength(), i + 1 + ") "
-									+ FileHandler.getAllSummaries().get(j).getPersonaName() + " (ID="
-									+ FileHandler.getAllSummaries().get(j).getSteamID() + ")" + "\n", null);
+									+ FileHandler.getCompletedPlayers().get(j).getSummary().getPersonaName() + " (ID="
+									+ FileHandler.getCompletedPlayers().get(j).getUser().getSteamId() + ")" + "\n",
+									null);
 						}
 					}
 
@@ -1162,16 +906,30 @@ public class BanTracker extends JFrame {
 			// Reset lastAdded for future use.
 			instance.clearLastAdded();
 		}
+
+		int newCount = FileHandler.getCompletedPlayers().size();
+
+		BanTracker.displayInfoBox((newCount - oldCount) + " players have been added.", "Players added");
 	}
 
-	private PlayerSummary.Player findPlayerWithID(String id) {
-		String cID = SteamDataParser.convertToCommunityID(id);
-		ArrayList<PlayerSummary.Player> summary = FileHandler.getAllSummaries();
-		for (int i = 0; i < summary.size(); i++) {
-			if (summary.get(i).getSteamID().equalsIgnoreCase(cID)) {
-				return summary.get(i);
-			}
-		}
-		return null;
+	public static void displayInfoBox(String msg, String title) {
+		JOptionPane.showMessageDialog(getFrames()[0], msg, title, JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	private void setupTable(JTable t) {
+		t.getColumn("ID").setMinWidth(150);
+		t.getColumn("ID").setMaxWidth(150);
+		t.getColumn("Date added").setMinWidth(75);
+		t.getColumn("Date added").setMaxWidth(75);
+		t.getColumn("Date updated").setMinWidth(85);
+		t.getColumn("Date updated").setMaxWidth(85);
+		t.getColumn("VAC bans").setMinWidth(65);
+		t.getColumn("VAC bans").setMaxWidth(65);
+		t.getColumn("Game bans").setMinWidth(75);
+		t.getColumn("Game bans").setMaxWidth(75);
+		t.getColumn("Last ban (days)").setMinWidth(100);
+		t.getColumn("Last ban (days)").setMaxWidth(100);
+
+		t.setRowHeight(30);
 	}
 }

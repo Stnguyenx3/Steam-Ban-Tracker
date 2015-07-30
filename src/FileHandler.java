@@ -21,15 +21,17 @@ import javax.swing.JOptionPane;
  */
 public class FileHandler implements Serializable {
 
-	private static ArrayList<User> tracked = new ArrayList<User>();
+	//private static ArrayList<User> tracked = new ArrayList<User>();
 
-	private static ArrayList<PlayerSummary.Player> trackedSummaries = new ArrayList<PlayerSummary.Player>();
+	//private static ArrayList<PlayerSummary.Player> trackedSummaries = new ArrayList<PlayerSummary.Player>();
 
-	private static ArrayList<PlayerSummary.Player> trackedSummariesUnsorted = new ArrayList<PlayerSummary.Player>();
+	//private static ArrayList<PlayerSummary.Player> trackedSummariesUnsorted = new ArrayList<PlayerSummary.Player>();
 
-	private static ArrayList<String[]> games = new ArrayList<String[]>();
+	private static ArrayList<CompletedPlayer> allCompletedPlayers = new ArrayList<CompletedPlayer>();
 
-	private static String savedString = "";
+	//private static ArrayList<String[]> games = new ArrayList<String[]>();
+
+	//private static String savedString = "";
 
 	private static String APIKEY = "";
 
@@ -41,7 +43,7 @@ public class FileHandler implements Serializable {
 			ObjectOutputStream oOS = new ObjectOutputStream(fOS);
 			oOS.writeObject(objToWrite);
 			oOS.close();
-			
+
 			// Write string to text file so that it can be displayed.
 			if (fileName.equalsIgnoreCase("apikey.txt")) {
 				File file = new File(fileName);
@@ -66,19 +68,21 @@ public class FileHandler implements Serializable {
 			ObjectInputStream oIS = new ObjectInputStream(fIS);
 
 			if (objType.equalsIgnoreCase("ArrayList<User>")) {
-				tracked = (ArrayList<User>) oIS.readObject();
+				//tracked = (ArrayList<User>) oIS.readObject();
 			} else if (objType.equalsIgnoreCase("ArrayList<PlayerSummary.Player>")) {
 				if (fileName.equalsIgnoreCase("summaries.tmp")) {
-					trackedSummaries = (ArrayList<PlayerSummary.Player>) oIS.readObject();
+					//trackedSummaries = (ArrayList<PlayerSummary.Player>) oIS.readObject();
 				}
 				if (fileName.equalsIgnoreCase("s_unsorted.tmp")) {
-					trackedSummariesUnsorted = (ArrayList<PlayerSummary.Player>) oIS.readObject();
+					//trackedSummariesUnsorted = (ArrayList<PlayerSummary.Player>) oIS.readObject();
 				}
 			} else if (objType.equalsIgnoreCase("ArrayList<String[]>")) {
-				games = (ArrayList<String[]>) oIS.readObject();
+				//games = (ArrayList<String[]>) oIS.readObject();
+			} else if (objType.equalsIgnoreCase("ArrayList<CompletedPlayer>")) {
+				allCompletedPlayers = (ArrayList<CompletedPlayer>) oIS.readObject();
 			} else if (objType.equalsIgnoreCase("apikey")) {
 				APIKEY = (String) oIS.readObject();
-			}else {
+			} else {
 				System.out.println("Object type " + objType + " needs to be implemented!");
 			}
 
@@ -95,38 +99,48 @@ public class FileHandler implements Serializable {
 		}
 
 	}
-
+	
 	/**
 	 * 
-	 * @return ArrayList of User objects currently being tracked.
+	 * @return ArrayList of CompletedPlayer objects that represent a player with profile information and a summary.
 	 */
-	public static ArrayList<User> getAllPlayers() {
-		return tracked;
+	public static ArrayList<CompletedPlayer> getCompletedPlayers() {
+		return allCompletedPlayers;
 	}
 
-	/**
-	 * 
-	 * @return ArrayList of sorted Player objects that contain a players summary.
-	 */
-	public static ArrayList<PlayerSummary.Player> getAllSummaries() {
-		return trackedSummaries;
-	}
-
-	/**
-	 * 
-	 * @return ArrayList of unsorted Player objects that contain a players summary.
-	 */
-	public static ArrayList<PlayerSummary.Player> getAllSummariesUnsorted() {
-		return trackedSummariesUnsorted;
-	}
-
-	/**
-	 * 
-	 * @return ArrayList of String Arrays that contain 10 players from a game.
-	 */
-	public static ArrayList<String[]> getGames() {
-		return games;
-	}
+//	/**
+//	 * 
+//	 * @return ArrayList of User objects currently being tracked.
+//	 */
+//	public static ArrayList<User> getAllPlayers() {
+//		return tracked;
+//	}
+//
+//	/**
+//	 * 
+//	 * @return ArrayList of sorted Player objects that contain a players
+//	 *         summary.
+//	 */
+//	public static ArrayList<PlayerSummary.Player> getAllSummaries() {
+//		return trackedSummaries;
+//	}
+//
+//	/**
+//	 * 
+//	 * @return ArrayList of unsorted Player objects that contain a players
+//	 *         summary.
+//	 */
+//	public static ArrayList<PlayerSummary.Player> getAllSummariesUnsorted() {
+//		return trackedSummariesUnsorted;
+//	}
+//
+//	/**
+//	 * 
+//	 * @return ArrayList of String Arrays that contain 10 players from a game.
+//	 */
+//	public static ArrayList<String[]> getGames() {
+//		return games;
+//	}
 
 	/**
 	 * Get the Steam Web API key from file.
@@ -152,12 +166,15 @@ public class FileHandler implements Serializable {
 		return APIKEY;
 	}
 
-	/**
-	 *  Updates an ArrayList containing User objects with new information from Steam Web API.
-	 * @param a ArrayList of User objects to be updated.
-	 */
-	public static void updateArrayList(ArrayList<User> a) {
-		tracked = a;
-	}
+//	/**
+//	 * Updates an ArrayList containing User objects with new information from
+//	 * Steam Web API.
+//	 * 
+//	 * @param a
+//	 *            ArrayList of User objects to be updated.
+//	 */
+//	public static void updateArrayList(ArrayList<User> a) {
+//		tracked = a;
+//	}
 
 }

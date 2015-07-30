@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -10,8 +12,11 @@ import javax.swing.table.AbstractTableModel;
  */
 public class PlayerTableModel extends AbstractTableModel {
 
-	ArrayList<User> users = FileHandler.getAllPlayers();
-	ArrayList<PlayerSummary.Player> summaries = FileHandler.getAllSummaries();
+	private ArrayList<CompletedPlayer> players;
+	
+	public PlayerTableModel(ArrayList<CompletedPlayer> p) {
+		this.players = new ArrayList<CompletedPlayer>(p);
+	}
 
 	@Override
 	public int getColumnCount() {
@@ -22,33 +27,29 @@ public class PlayerTableModel extends AbstractTableModel {
 	@Override
 	public int getRowCount() {
 
-		return users.size();
+		return players.size();
 	}
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 
-		User user = users.get(rowIndex);
-
+		CompletedPlayer player = players.get(rowIndex);
+		
 		switch (columnIndex) {
 		case 0:
-			if (user.getSteamId().equalsIgnoreCase(summaries.get(rowIndex).getSteamID())) {
-				return summaries.get(rowIndex).getPersonaName();
-			} else {
-				return null;
-			}
+			return player.getSummary().getPersonaName();
 		case 1:
-			return user.getDateAdded();
+			return player.getUser().getDateAdded();
 		case 2:
-			return user.getDateUpdated();
+			return player.getUser().getDateUpdated();
 		case 3:
-			return user.getNumberOfBans();
+			return player.getUser().getNumberOfBans();
 		case 4:
-			return user.getNumberOfGameBans();
+			return player.getUser().getNumberOfGameBans();
 		case 5:
-			return user.getDaysSinceLastBan();
+			return player.getUser().getDaysSinceLastBan();
 		case 6:
-			return user.getSteamId();
+			return player.getUser().getSteamId();
 		}
 
 		return null;
@@ -78,6 +79,11 @@ public class PlayerTableModel extends AbstractTableModel {
 
 	public boolean isCellEditable(int row, int column) {
 		return false;
+	}
+	
+	public void refresh(ArrayList<CompletedPlayer> list) {
+		players = new ArrayList<CompletedPlayer>(list);
+		fireTableDataChanged();
 	}
 
 }

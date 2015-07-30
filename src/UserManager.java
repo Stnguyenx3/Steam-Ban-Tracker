@@ -30,9 +30,9 @@ public class UserManager {
 	// gson Object used to parse json data.
 	static Gson gson = new Gson();
 
-	private static ArrayList<User> trackedPlayers = FileHandler.getAllPlayers();
+	private static ArrayList<User> trackedPlayers = new ArrayList<User>();
 
-	private static ArrayList<PlayerSummary.Player> trackedSummaries = FileHandler.getAllSummaries();
+	private static ArrayList<CompletedPlayer> completedPlayers = FileHandler.getCompletedPlayers();
 
 	// ArrayList containing the current requests User objects, used for
 	// displaying information to the user in .
@@ -56,6 +56,12 @@ public class UserManager {
 	 *            The number of players currently in the Array.
 	 */
 	public void addPlayer(String jData, String[] ids, int size) {
+
+		// Initialize trackedPlayers using CompletedPlayer objects.
+		trackedPlayers.clear();
+		for (int i = 0; i < completedPlayers.size(); i++) {
+			trackedPlayers.add(completedPlayers.get(i).getUser());
+		}
 
 		// Deserialize JSON data into SteamUsers Object.
 		SteamUsers newUsr = gson.fromJson(jData, SteamUsers.class);
@@ -81,6 +87,22 @@ public class UserManager {
 								currentUser.getVacBan(), currentUser.getNumberOfBans(),
 								currentUser.getDaysSinceLastBan(), currentUser.getEconomyBanned(),
 								currentUser.getNumberOfGameBans(), dateAdded);
+
+						String playerSummaryJson = SteamWebAPI.getPlayerSummaries(user.getSteamId());
+						PlayerSummary playerSummary = new PlayerSummary();
+						if (!playerSummaryJson.equalsIgnoreCase("No summary!")) {
+							playerSummary = gson.fromJson(playerSummaryJson, PlayerSummary.class);
+						} else {
+							System.out.println("No Summary could be found!");
+						}
+
+						if (playerSummary.response.size() > 0) {
+							CompletedPlayer newPlayer = new CompletedPlayer(user, playerSummary.response.getPlayer(0));
+							completedPlayers.add(newPlayer);
+						} else {
+							BanTracker.displayInfoBox("Unable to get summary for " + user.getSteamId(), "Error");
+						}
+
 					} else {
 						int index = trackedPlayers.indexOf(currentUser);
 						user = User.updateUser(trackedPlayers.get(index), dateAdded);
@@ -95,22 +117,12 @@ public class UserManager {
 						alreadyTracked.add(user);
 						// Update user information
 						updatedUsers.add(user);
-						// System.out.println(user.getSteamId() +
-						// " has been updated!");
 					}
 				}
 
-				if (lastAdded.size() > 0) {
-					// Get Player Summaries and add to ArrayList.
-					parsePlayerSummary(lastAdded);
-				}
-
 				// Sort trackedPlayers, trackedSummaries, and updatedUsers so
-				// the
-				// player and their
-				// summaries match.
+				// the player and their summaries match.
 				Collections.sort(trackedPlayers);
-				Collections.sort(trackedSummaries);
 				Collections.sort(updatedUsers);
 
 			} else {
@@ -124,6 +136,11 @@ public class UserManager {
 	 * @return ArrayList of User objects representing all users being tracked.
 	 */
 	public ArrayList<User> getTracked() {
+		trackedPlayers.clear();
+		for (int i = 0; i < completedPlayers.size(); i++) {
+			trackedPlayers.add(completedPlayers.get(i).getUser());
+		}
+
 		return trackedPlayers;
 	}
 
@@ -155,78 +172,14 @@ public class UserManager {
 	 */
 	public boolean isTracked(String cID) {
 
-		ArrayList<User> users = FileHandler.getAllPlayers();
+		ArrayList<CompletedPlayer> players = FileHandler.getCompletedPlayers();
 
-		for (int i = 0; i < users.size(); i++) {
-			if (users.get(i).getSteamId().equals(cID)) {
+		for (int i = 0; i < players.size(); i++) {
+			if (players.get(i).getUser().getSteamId().equals(cID)) {
 				return true;
 			}
 		}
 		return false;
-	}
-
-	public void parsePlayerSummary(ArrayList<User> communityID) {
-
-		String jsonData = SteamWebAPI.getPlayerSummaries(communityID);
-		PlayerSummary playerSummary = new PlayerSummary();
-
-		if (!jsonData.equalsIgnoreCase("No Summaries.")) {
-			playerSummary = gson.fromJson(jsonData, PlayerSummary.class);
-		}
-
-		// System.out.println("Printing player summary...");
-		// System.out.println(playerSummary);
-
-		if (!playerSummary.response.isEmpty()) {
-
-			for (int i = 0; i < playerSummary.response.size(); i++) {
-
-				PlayerSummary.Player playerToAdd = playerSummary.response.getPlayer(i);
-
-				trackedSummaries.add(playerToAdd);
-
-				FileHandler.getAllSummariesUnsorted().add(playerToAdd);
-
-			}
-
-		}
-
-	}
-
-	/**
-	 * Check whether or not a player has been VAC banned after being adding to
-	 * the list.
-	 * 
-	 * @param cID
-	 * @return
-	 */
-	public boolean bannedSinceAdded(String cID) {
-
-		boolean found = false;
-
-		for (int i = 0; i < FileHandler.getAllPlayers().size(); i++) {
-
-			// Search for player in list.
-			if (cID.equals(FileHandler.getAllPlayers().get(i).getSteamId())) {
-
-				found = true;
-
-				if (true) {
-					System.out.println(FileHandler.getAllPlayers().get(i).getSteamId() + " ("
-							+ FileHandler.getAllSummaries().get(i).getPersonaName() + ") has been VAC banned!");
-					return true;
-				}
-
-			}
-
-		}
-
-		if (!found) {
-			System.out.println("User could not be found.");
-		}
-
-		return false;
-
 	}
 
 	/**
@@ -237,9 +190,10 @@ public class UserManager {
 	 *            past month for VAC bans.
 	 */
 	public void recentVACBans(int num) {
-		for (int i = 0; i < FileHandler.getAllPlayers().size(); i++) {
-			if (FileHandler.getAllPlayers().get(i).getDaysSinceLastBan() < num) {
-				System.out.println(FileHandler.getAllPlayers().get(i).getSteamId() + " has a recent VAC ban!");
+		for (int i = 0; i < FileHandler.getCompletedPlayers().size(); i++) {
+			if (FileHandler.getCompletedPlayers().get(i).getUser().getDaysSinceLastBan() < num) {
+				System.out.println(FileHandler.getCompletedPlayers().get(i).getUser().getSteamId()
+						+ " has a recent VAC ban!");
 			}
 		}
 	}
@@ -281,7 +235,12 @@ public class UserManager {
 
 		// Clear updatedUsers so that it may be used again.
 		updatedUsers.clear();
-		
+
+		trackedPlayers.clear();
+		for (int i = 0; i < completedPlayers.size(); i++) {
+			trackedPlayers.add(completedPlayers.get(i).getUser());
+		}
+
 		String[] ids = new String[trackedPlayers.size()];
 
 		for (int i = 0; i < trackedPlayers.size(); i++) {
@@ -295,7 +254,7 @@ public class UserManager {
 		List<List<String>> subIDs = Lists.partition(allIDs, 100);
 
 		for (int i = 0; i < subIDs.size(); i++) {
-			
+
 			String[] subIDsArr = new String[subIDs.get(i).size()];
 			subIDsArr = subIDs.get(i).toArray(subIDsArr);
 
